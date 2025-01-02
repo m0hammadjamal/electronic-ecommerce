@@ -16,6 +16,67 @@ from users.models import *
 from customers.models import *
 from managers.forms import *
 
+
+@login_required(login_url="/app/login")
+@allow_manager
+def index(request):
+
+    orders = Order.objects.all().exclude(order_status='IN').count()
+    earnings = Order.objects.exclude(order_status__in=['IN', 'CA']).aggregate(Sum('total'))["total__sum"]
+    items = Product.objects.all().count()
+    customers = Customer.objects.all().count()
+
+    instances = Order.objects.all().exclude(order_status='IN')[:5]
+    
+    context= {
+        "title": "Store | Dashboard",
+        "items": items,
+        "customers": customers,
+        "earnings":earnings,
+        "orders": orders,
+        "instances":instances
+    }
+    return render(request, "panel/index.html", context=context)
+
+
+
+def login(request):
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        password = request.POST.get('password')
+
+        if email and password:
+            user = authenticate(request, email=email, password=password)
+            if user is not None and user.is_manager:
+                auth_login(request, user)
+
+                return HttpResponseRedirect(reverse("managers:index"))
+            else:
+                context= {
+                    "title": "Manager Login | Home",
+                    "error": True,
+                    "message": "Invalid credentials"
+                }
+                return render(request, "panel/login.html", context=context)
+        else:
+            context= {
+                "title": "Manager Login | Home",
+                "error": True,
+                "message": "Invalid credentials"
+            }
+            return render(request, "panel/login.html", context=context)
+    else:
+        context= {
+            "title" : "Manager Login | Home"
+        }
+        return render(request, "panel/login.html", context=context)
+
+
+
+def logout(request):
+    auth_logout(request)
+    return HttpResponseRedirect(reverse("managers:login"))
+
 @login_required(login_url="/app/login")
 @allow_manager
 def categories(request):
