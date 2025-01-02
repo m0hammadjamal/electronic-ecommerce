@@ -1,0 +1,123 @@
+{% extends "base/base.html" %}
+{% block container %}
+{% load static %}
+
+{% include 'includes/header.html' %}
+
+<section class="px-[5%] md:mt-[100px] mt-[170px]">
+    <div class="max-w-[620px] m-auto">
+        <div class="flex px-[20px] py-[10px] w-full m-auto shadow-md border-[1px] rounded-[5px] h-[150px] items-center">
+            <img src="{% static './web/images/man.png' %}" alt="account" class="h-[70%] mr-[10px]">
+            <ul>
+                <li class="font-[500] mb-[5px]">{{ user.first_name|default:"User" }} {{ user.last_name|default:"" }}</li>
+                <li class="font-[500] mb-[5px]">{{ user.profile.phone_number|default:"Phone Not Set" }}</li>
+                <li class="font-[500]">{{ user.email }}</li>
+            </ul>
+        </div>
+        <ul class="w-full">
+            <li class="w-[70%] h-[40px] flex items-center px-[20px] bg-purple-500 m-auto mt-[20px] rounded-[5px]">
+                <a class="flex items-center h-full w-full" href="{% url 'web:manage_addresses' %}">
+                    <img src="{% static './web/images/address.png' %}" alt="address" class="h-[70%] mr-[15px]">
+                    <p class="text-white font-[500]">Manage Address</p>
+                </a>
+            </li>
+            <li class="w-[70%] h-[40px] flex items-center px-[20px] bg-purple-500 m-auto mt-[20px] rounded-[5px]">
+                <a class="flex items-center h-full w-full" href="{% url 'web:orders' %}">
+                    <i class='text-[30px] mr-[15px] text-white bx bx-cart'></i>
+                    <p class="text-white font-[500]">Orders</p>
+                </a>
+            </li>
+            <li class="w-[70%] h-[40px] flex items-center px-[20px] bg-purple-500 m-auto mt-[20px] rounded-[5px]">
+                <a class="flex items-center h-full w-full" href="{% url 'web:logout' %}">
+                    <img src="{% static './web/images/logout.png' %}" alt="logout" class="h-[70%] mr-[15px]">
+                    <p class="text-white font-[500]">Logout</p>
+                </a>
+            </li>
+        </ul>
+    </div>
+</section>
+
+<section class="max-w-[620px] m-auto mt-[50px] px-[15px]">
+    <h2>Recent Orders</h2>
+    <div class="mt-[30px] mb-[30px]">
+        {% for order in recent_orders %}
+        <div class="col-span-1 p-4 rounded-xl border shadow-md border-[#A41E11] mb-5">
+            <a href="{% url 'web:order' id=order.id %}" class="flex justify-between items-center">
+                <div class="w-[65%]">
+                    <h3 class="text-[16px] font-semibold text-gray-700 mb-2">{{ order.order_id }}</h3>
+                    <p class="text-[14px] font-normal mb-2">
+                        {{ order.items.first.product.name }}
+                        {% if order.items.count > 1 %}
+                            + {{ order.items.count|add:"-1" }}
+                        {% endif %}
+                    </p>
+                    <p class="text-[14px] font-normal mb-2 text-[#A41E11]">
+                        status - {{ order.get_order_status_display }}
+                    </p>
+                </div>
+            </a>
+        </div>        
+        {% endfor %}
+    </div>
+</section>
+
+
+<script>
+    // JavaScript to toggle the mobile menu
+    document.addEventListener('DOMContentLoaded', () => {
+    // Get elements
+    const searchBar = document.getElementById('search-bar');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const profileMenuButton = document.getElementById('profile-menu-button');
+    const profileMenu = document.getElementById('profile-menu');
+
+    // Toggle mobile menu
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        document.body.classList.toggle('overflow-hidden', !mobileMenu.classList.contains('hidden'));
+    });
+
+    // Hide mobile menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+            mobileMenu.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    });
+
+    // Toggle profile menu
+    profileMenuButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent the event from propagating to the document
+        profileMenu.classList.toggle('hidden');
+    });
+
+    // Hide profile menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!profileMenu.contains(event.target) && !profileMenuButton.contains(event.target)) {
+            profileMenu.classList.add('hidden');
+        }
+    });
+
+    // Hide profile menu on scroll
+    window.addEventListener('scroll', () => {
+        profileMenu.classList.add('hidden');
+    });
+
+    // Hide search bar on scroll
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > lastScrollY) {
+            searchBar.classList.add('hidden');
+        } else {
+            searchBar.classList.remove('hidden');
+        }
+        lastScrollY = window.scrollY;
+    });
+});
+
+</script>
+        <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+        <script src="./js/jquery-3.7.1.min.js"></script>
+        <script src="./js/index.js"></script>
+        {% endblock %}

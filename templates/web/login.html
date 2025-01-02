@@ -1,0 +1,55 @@
+{% extends "base/base.html" %}
+{% block container %}
+{% load static %}
+
+<section class="h-screen flex justify-center items-center bg-gradient-to-br from-blue-500 to-purple-600">
+    <div class="bg-white shadow-lg rounded-lg w-full max-w-md p-8">
+        <!-- Logo -->
+        <div class="text-center mb-6">
+            <img src="{% static 'web/images/logo.png' %}" alt="Mailroom Logo" class="mx-auto w-16 mb-4">
+            <h2 class="text-2xl font-bold text-gray-700">mailroom</h2>
+        </div>
+
+        <!-- Form -->
+        <form action="" method="post">
+            {% csrf_token %}
+            {% if error %}
+                <div class="text-red-500 text-center mb-4">{{ message }}</div>
+            {% endif %}
+
+            <!-- Email Field -->
+            <div class="mb-4">
+                <input type="email" name="email" required 
+                    class="w-full border rounded-lg py-3 px-4 text-gray-600 text-sm outline-none placeholder-gray-400" 
+                    placeholder="Email">
+            </div>
+
+            <!-- Password Field -->
+            <div class="mb-6">
+                <input type="password" name="password" required 
+                    class="w-full border rounded-lg py-3 px-4 text-gray-600 text-sm outline-none placeholder-gray-400" 
+                    placeholder="Password">
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" 
+                class="w-full py-3 text-white bg-gradient-to-r from-blue-600 to-purple-500 rounded-lg font-semibold text-sm hover:opacity-90 transition">
+                LOG IN
+            </button>
+        </form>
+
+        <!-- register Link -->
+        <div class="text-center mt-4">
+            <p class="text-sm">Don't have an account?
+                <a href="{% url 'web:register' %}" class="text-blue-500 hover:underline">Signup</a>
+            </p>
+        </div>
+
+        <!-- Forgot Password -->
+        <div class="text-center mt-4">
+            <a href="{% url 'web:forgot_password' %}" class="text-sm text-blue-500 hover:underline">Forgot Password?</a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

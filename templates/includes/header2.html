@@ -1,0 +1,111 @@
+{% load static %}
+
+<header class="fixed top-0 left-0 w-full shadow-md bg-white z-50">
+    <section class="wrapper flex justify-between items-center h-[80px]">
+        <h1>
+            <a href="{% url 'web:index' %}">
+                <img src="{% static './web/images/logooo.png' %}" alt="logo" class="w-[50px] h-[50px]">
+            </a>
+        </h1>
+        
+                
+        <div class="">
+            <ul class="flex justify-end items-center">   
+                <li class="mr-1 md:mr-7 hidden md:flex">                   
+                    <a href="{% url 'web:service' %}" class="text-[16px] font-semibold flex items-center hover:text-purple-500">
+                        <img class="h-[35px] md:h-[16px] mr-[5px]" src="{% static './web/images/service-icon.png' %}" alt="service">
+                        <p class="hidden md:block">Service</p>
+                    </a>
+                </li>             
+                <li class="mr-1 md:mr-7">                   
+                    <a href="{% url 'web:whishlist' %}" class="text-[16px] font-semibold flex items-center hover:text-purple-500">
+                        <i class='text-[35px] md:text-[16px] md:font-bold mr-[5px] bx bx-heart'></i>
+                        <p class="hidden md:block">Wishlist</p>
+                    </a>
+                </li>
+                <li class="mr-7 px-3 border-l border-r flex items-center justify-center">
+                    <a href="{% url 'web:cart' %}" class="relative hover:text-purple-500">
+                        <i class="text-[35px] bx bx-cart"></i>
+                        <span class="absolute w-[16px] h-[16px] bg-gray-600 rounded-full text-white text-[9px] flex items-center justify-center top-[9px] right-0 transform translate-x-[50%] translate-y-[-50%]">
+                            {{ cart_count }}
+                        </span>
+                    </a>
+                </li>
+                <li id="profile-menu-button" class="mr-7 hidden md:block cursor-pointer hover:text-purple-500">                    
+                    <p class="text-[16px] font-semibold flex items-center">
+                        <i class='font-bold mr-[5px] bx bx-user'></i>
+                        <a>Account</a>
+                    </p>
+                </li>
+
+                <div id="profile-menu" class="hidden absolute z-50 top-[80px] bg-gray-100 right-[5%] border shadow rounded-b-xl p-5 w-[240px]">
+                    <p class="font-semibold border-b pb-2 hover:text-purple-500">My Account</p>
+                    <p class="text-[16px] py-2 hover:text-purple-500">
+                        <a href="{% url 'web:account' %}">Manage Profile</a>
+                    </p>
+                    <p class="text-[16px] py-2 hover:text-purple-500">
+                        <a href="{% url 'web:orders' %}">View Orders</a>
+                    </p>
+                    <p class="text-[16px] py-2 hover:text-purple-500 border-b">
+                        <a href="{% url 'web:whishlist' %}">Manage Whishlist</a>
+                    </p>
+                    {% if user.is_authenticated %}
+                    <p class="text-[16px] py-2 hover:text-purple-500 border-b">
+                        <a href="{% url 'web:logout' %}">Logout</a>
+                    </p>
+                    {% else %}
+                    <p class="text-[16px] pt-2 hover:text-purple-500">
+                        <a href="{% url 'web:login' %}">Login</a>
+                    </p>
+                    {% endif %}
+                </div>
+
+                <li class="md:hidden">
+                    <img id="mobile-menu-button" src="{% static './web/images/menu.png' %}" alt="icon" class="w-[28px]">
+                </li>
+                <div id="mobile-menu" class="hidden fixed top-0 left-0 h-full z-50 w-[70%] bg-gray-200">
+                    <div class="h-[100px] bg-slate-600 p-4 flex justify-start items-center text-white">
+                        <img src="{% static './web/images/user.png' %}" alt="icon" class="w-[30px]">
+                        <div class="ml-3  hover:text-purple-500">
+                            <p class="text-[14px] font-semibold">
+                                {{ user.first_name|default:"User" }} {{ user.last_name|default:"" }}
+                            </p>
+                            <a href="{% url 'web:account' %}" class="text-[14px] font-normal mb-1  hover:text-purple-500">
+                                My account
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="#" class="text-[16px] font-semibold  hover:text-purple-500">All Categories</a>
+                        </p>
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="{% url 'web:service' %}" class="text-[16px] font-semibold hover:text-purple-500">Service</a>
+                        </p>
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="{% url 'web:cart' %}" class="text-[16px] font-semibold hover:text-purple-500">Cart</a>
+                        </p>
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="{% url 'web:orders' %}" class="text-[16px] font-semibold hover:text-purple-500">View Orders</a>
+                        </p>
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="{% url 'web:account' %}" class="text-[16px] font-semibold hover:text-purple-500">Manage Account</a>
+                        </p>
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="{% url 'web:whishlist' %}" class="text-[16px] font-semibold hover:text-purple-500">Manage Whishlist</a>
+                        </p>
+                        {% if user.is_authenticated %}
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="{% url 'web:logout' %}" class="text-[16px] font-semibold hover:text-purple-500">Logout</a>
+                        </p>
+                        {% else %}
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="{% url 'web:login' %}" class="text-[16px] font-semibold hover:text-purple-500">Login</a>
+                        </p>
+                        {% endif %}
+                    </div>
+                </div>
+            </ul>
+        </div>
+    </section>    
+</header>

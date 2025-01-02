@@ -1,0 +1,54 @@
+{% extends "base/base.html" %}
+{% block container %}
+
+<header class="h-[80px]">
+    <button onclick="window.history.back()" class="hover:text-purple-500 font-semibold text-[18px] flex items-center relative top-[26px] left-[20px]">
+        <i class='text-[20px] md:text-[20px] mr-2 font-bold bx bx-arrow-back'></i>
+    </button>
+    <h1 class="text-black text-center text-[22px] font-[600]">Address</h1>
+</header>
+
+<section class="py-10 bg-gray-50 min-h-screen">
+    <section class="wrapper max-w-4xl mx-auto bg-white shadow-lg rounded-lg p-6">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-2xl font-bold text-gray-700">Manage Addresses</h2>
+            <a href="{% url 'web:add_address' %}?next={{ request.path }}" class="inline-block bg-red-600 text-white text-base font-medium py-2 px-5 rounded-lg hover:bg-red-700 transition">
+                Add New Address
+            </a>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {% for address in addresses %}
+            <div class="p-4 border rounded-lg shadow-md bg-gray-50 hover:bg-gray-100 transition">
+                <div class="mb-4">
+                    <p class="text-base font-semibold text-gray-700">
+                        {{ address.address1 }}{% if address.address2 %}, {{ address.address2 }}{% endif %}
+                    </p>
+                    <p class="text-sm text-gray-500">
+                        {{ address.city }}, {{ address.state }}, {{ address.pincode }}
+                    </p>
+                    <p class="text-sm text-gray-500">Type: {{ address.get_address_type_display }}</p>
+                </div>
+                <div class="flex justify-end items-center space-x-3">
+                    <a href="{% url 'web:edit_address' id=address.id %}?next={{ request.path }}" class="text-blue-600 hover:text-blue-800 flex items-center space-x-1">
+                        <i class="bx bx-edit text-lg"></i>
+                        <span class="text-sm">Edit</span>
+                    </a>
+                    <form action="{% url 'web:delete_address' id=address.id %}?next={{ request.path }}" method="post" class="inline-block">
+                        {% csrf_token %}
+                        <button type="submit" class="text-red-600 hover:text-red-800 flex items-center space-x-1">
+                            <i class="bx bx-trash text-lg"></i>
+                            <span class="text-sm">Delete</span>
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <p class="text-gray-500 text-center text-base col-span-full">
+                No addresses found. Click "Add New Address" above to add your first address.
+            </p>
+            {% endfor %}
+        </div>
+    </section>
+</section>
+{% endblock %}

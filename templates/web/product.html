@@ -1,0 +1,620 @@
+{% extends "base/base.html" %} {% block container %} {% load static %} {% load custom_filters %}
+
+{% include 'includes/header2.html' %}
+
+<style>
+ .collapsed {
+    max-height: 100px; /* Adjust the height to show only part of the content */
+    overflow: hidden;
+}
+
+.expanded {
+    max-height: none; /* Show the full content */
+}
+
+</style>
+
+
+
+<!----------------------------------------------------------------------------------------------------------------------------------------------->
+    
+
+<button id="scrollTopBtn" class="fixed bottom-4 right-4 p-3 z-50 rounded-full bg-gray-600 text-white hover:bg-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50">
+    <!-- SVG for Up Arrow -->
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7" />
+    </svg>
+</button>
+
+    
+    
+    <!-- product images -->
+
+    <section class="lg:flex lg:justify-between items-center lg:mt-0 min-h-[896px] m-auto pt-[85px]">
+        <!-- Product Images Section -->
+        <div class="product-images lg:pl-[60px] md:pl-[40px] pl-[16px] sm:pr-[40px] lg:pr-0 products m-auto md:items-center md:max-w-[606px] lg:mt-14">
+            <div class="relative flex justify-center m-auto">
+                <div class="absolute left-[2px] top-0 p-2">
+                    <!-- Wishlist Icon -->
+                    <div class="p-2 rounded-full bg-gray-200">
+                        {% if wishlist_items %}
+                        <a href="{% url 'web:remove_from_wishlist' id=product.id %}">
+                            <img src="{% static './web/images/like1.png' %}" alt="liked" class="w-[14px]">
+                        </a>
+                        {% else %}
+                        <a href="{% url 'web:add_to_wishlist' id=product.id %}">
+                            <img src="{% static './web/images/like2.png' %}" alt="unliked" class="w-[14px]">
+                        </a>
+                        {% endif %}
+                    </div>
+    
+                    <!-- Share Button -->
+                    <div class="p-2 mt-5 rounded-full bg-gray-200">
+                        <button id="share-button" class="flex justify-center items-center w-full">
+                            <img src="{% static './web/images/share.png' %}" alt="Share" class="w-[14px]">
+                        </button>
+                    </div>
+    
+                    <!-- Fallback Share Options -->
+                    <div id="fallback-share" class="hidden mt-3">
+                        <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri }}&text=Check+out+this+product!" target="_blank" class="block">Twitter</a>
+                        <a href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri }}" target="_blank" class="block">Facebook</a>
+                        <a href="mailto:?subject=Check out this product&body=Here is the link: {{ request.build_absolute_uri }}" class="block">Email</a>
+                    </div>
+                </div>
+                <!-- Main Product Image -->
+                <img id="main-product-image" src="{{ selected_images.0.image.url }}" alt="Product Image" class="sm:max-h-[516px] max-w-full m-auto">
+            </div>
+    
+            <!-- Thumbnail Images -->
+            <ul id="thumbnail-container" class="flex overflow-auto sm:w-[413px] w-[263.59px] m-auto mt-5 gap-2">
+                {% for image in selected_images %}
+                <li class="thumbnail-item flex-shrink-0 sm:min-w-[74.88px] min-w-[60px] sm:min-h-[93px] min-h-[66px] h-[66px]">
+                    <img src="{{ image.image.url }}" alt="{{ image.alt_text }}" 
+                         data-large-image="{{ image.image.url }}" 
+                         class="thumbnail object-cover rounded-md w-full h-full">
+                </li>
+                {% endfor %}
+            </ul>
+            
+            
+        </div>
+    
+        <script>
+            document.getElementById('share-button').addEventListener('click', async () => {
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: 'Check out this product!',
+                            text: 'I found this amazing product. Take a look!',
+                            url: window.location.href
+                        });
+                    } catch (error) {
+                        console.error('Error sharing:', error);
+                    }
+                } else {
+                    const fallbackShare = document.getElementById('fallback-share');
+                    fallbackShare.classList.toggle('hidden');
+                }
+            });
+        </script>
+    
+        <!-- Product Details Section -->
+        <form method="POST" action="{% url 'web:add_to_cart' %}" class="product-details lg:pr-[60px] md:pr-[40px] pr-[16px] sm:pl-[40px] pl-[16px] lg:max-w-[606px]">
+            {% csrf_token %}
+            <input type="hidden" name="product_id" value="{{ product.id }}">
+            <input type="hidden" name="color_id" value="{{ selected_color_id|default:'' }}">
+            <input type="hidden" name="storage_value" value="{{ selected_storage_value|default:'' }}">
+            <input type="hidden" name="ram_value" value="{{ selected_ram_value|default:'' }}">
+            <h1 class="sm:text-[30px] text-[25px] font-[400] text-[#000000] mb-[24px]">
+                {{ product.name }}
+                {% if selected_storage_value or selected_color_id %}
+                    (
+                    {% if selected_storage_value %}
+                        {{ selected_storage_value }}
+                    {% endif %}
+                    {% if selected_color_id %}
+                        {% for color in unique_colors %}
+                            {% if color.id == selected_color_id %}
+                                ,{{ color.name }}
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                    )
+                {% endif %}
+            </h1>
+            
+            <ul class="flex items-center mb-[24px]">
+                <li class="text-[28px] font-[500] mr-[16px]">${{ selected_price }}</li>
+                <li class="text-[20px] font-[400] text-[#A0A0A0] line-through">${{ product.regular_price }}</li>
+            </ul>
+    
+            <!-- Color Options -->
+            <ul id="color-options" class="flex items-center mb-[24px]">
+                <li class="mr-[10px] text-[15px] font-[500]">Select color:</li>
+                {% for color in unique_colors %}
+                <li>
+                    <a href="?color_id={{ color.id }}&storage_value={{ selected_storage_value|default:'' }}&ram_value={{ selected_ram_value|default:'' }}"
+                       class="color-option h-[32px] w-[32px] rounded-full block mr-2"
+                       style="background-color: {{ color.color }}; {% if color.id == selected_color_id %}border: 2px solid black;{% else %}border: 1px solid #ccc;{% endif %}">
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+    
+            <!-- Storage Options -->
+            <ul id="storage-options" class="grid lg:grid-cols-4 md:grid-cols-2 gap-[8px] md:w-[90%] mb-[24px]">
+                {% for storage, ram_dict in grouped_options.items %}
+                <li>
+                    <a href="?color_id={{ selected_color_id|default:'' }}&storage_value={{ storage }}&ram_value={{ selected_ram_value|default:'' }}"
+                       class="storage-option py-[16px] px-[24px] rounded-[8px] text-[14px] font-[500] border transition-all"
+                       style="{% if storage == selected_storage_value %}border: 2px solid black;{% else %}border: 1px solid #ccc;{% endif %}">
+                        {{ storage }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+    
+            <!-- RAM Options -->
+            <ul id="ram-options" class="grid lg:grid-cols-4 md:grid-cols-2 gap-[8px] md:w-[90%] my-[48px]">
+                {% for ram in unique_rams %}
+                <li>
+                    <a href="?color_id={{ selected_color_id|default:'' }}&storage_value={{ selected_storage_value|default:'' }}&ram_value={{ ram }}"
+                       class="ram-option py-[16px] px-[24px] rounded-[8px] text-[14px] font-[500] border transition-all"
+                       style="{% if ram == selected_ram_value %}border: 2px solid black;{% else %}border: 1px solid #ccc;{% endif %}">
+                        {{ ram }}
+                    </a>
+                </li>
+                {% endfor %}
+            </ul>
+    
+            
+
+
+            <ul class="grid lg:grid-cols-3 grid-cols-2 lg:gap-2 gap-6 mb-6">
+                {% for spec in specs %}
+                <li class="flex items-center bg-[#F4F4F4] rounded-[7px]">
+                    <!-- Icon Image -->
+                    <img src="{{ spec.image.image.url }}" alt="{{ spec.image.name }}" 
+                         class="mr-[10px] lg:pl-2 pl-4 h-[24px]">
+                    
+                    <!-- Spec Details -->
+                    <div class="py-[16px] lg:pr-2 pr-4">
+                        <p class="text-[14px] font-[400] text-[#6F6F6F]">{{ spec.image.name }}</p>
+                        <span class="text-[14px] font-[400]">{{ spec.detail }}</span>
+                    </div>
+                </li>
+                {% endfor %}
+            </ul>
+            
+            <p class="text-[14px] font-[400] text-[#6C6C6C] leading-[24px] w-full mb-[24px]">Enhanced capabilities thanks toan enlarged display of 6.7 inchesand work without rechargingthroughout the day. Incredible photosas in weak, yesand in bright lightusing the new systemwith two cameras <span class="text-[14px] font-[400] leading-[24px] border-b-[1px] text-[#000] border-[#000]">more...</span></p>
+            <div class="mb-[24px]">
+                {% if is_in_cart %}
+                <a href="{% url 'web:cart' %}" class="w-full block text-center text-[16px] font-[500] text-[#FFFFFF] py-[16px] m-auto rounded-[6px] bg-[#000000]">Go to Cart</a>
+                {% else %}
+                <button type="submit" class="w-full block text-center text-[16px] font-[500] text-[#FFFFFF] py-[16px] m-auto rounded-[6px] bg-[#000000]">Add to Cart</button>
+                {% endif %}
+            </div>
+            
+            <ul class="grid grid-cols-3 justify-center gap-[8px] mb-[24px] m-auto">
+                <li class="sm:flex items-center">
+                    <div class="w-[56px] mr-[8px] p-[12px] bg-[#F6F6F6] rounded-[11px]">
+                      <img src="{% static './web/images/delivery.png' %}" alt="feature" class="sm:min-h-[24px] min-h-[21px] sm:min-w-[24px] min-w-[21px]">  
+                    </div>                    
+                    <div class="">
+                        <p class="text-[14px] font-[500] text-[#6F6F6F]">Free Delivery</p>
+                        <span class="text-[14px] font-[500]">1-2 day</span>
+                    </div>
+                </li>
+                <li class="sm:flex items-center">
+                    <div class="w-[56px] mr-[8px] p-[12px] bg-[#F6F6F6] rounded-[11px]">
+                      <img src="{% static './web/images/stock.png' %}" alt="feature" class="sm:min-h-[24px] min-h-[21px] sm:min-w-[24px] min-w-[21px]">
+                    </div>                    
+                    <div class="">
+                        <p class="text-[14px] font-[500] text-[#6F6F6F]">In Stock</p>
+                        <span class="text-[14px] font-[500]">Today</span>
+                    </div>
+                </li>
+                <li class="sm:flex items-center">
+                    <div class="w-[56px] mr-[8px] p-[12px] bg-[#F6F6F6] rounded-[11px]">
+                      <img src="{% static './web/images/verify.png' %}" alt="feature" class="sm:min-h-[24px] min-h-[21px] sm:min-w-[24px] min-w-[21px]">  
+                    </div>                    
+                    <div class="">
+                        <p class="text-[14px] font-[500] text-[#6F6F6F]">Guaranteed</p>
+                        <span class="text-[14px] font-[500]">1 year</span>
+                    </div>
+                </li>
+            </ul>
+        </form>
+    </section>
+
+    <script>
+        // Color selection
+// Default selection
+window.onload = () => {
+    // Select the first color option by default
+    const defaultColorOption = document.querySelector('.color-option');
+    if (defaultColorOption) {
+        defaultColorOption.classList.add('ring-[3px]', 'ring-[#000]');
+    }
+
+    // Select the first storage option by default
+    const defaultStorageOption = document.querySelector('.storage-option');
+    if (defaultStorageOption) {
+        defaultStorageOption.style.border = '2px solid #000';
+    }
+};
+
+// Color selection
+document.querySelectorAll('.color-option').forEach((option) => {
+    option.addEventListener('click', () => {
+        // Remove active styles from all options
+        document.querySelectorAll('.color-option').forEach((opt) => opt.classList.remove('ring-[3px]', 'ring-[#000]'));
+
+        // Add active style to the selected option
+        option.classList.add('ring-[3px]', 'ring-[#000]');
+    });
+});
+
+// Storage selection
+document.querySelectorAll('.storage-option').forEach((option) => {
+    option.addEventListener('click', () => {
+        // Remove active styles from all options
+        document.querySelectorAll('.storage-option').forEach((opt) => opt.style.border = '1px solid #D5D5D5');
+
+        // Add active style to the selected option
+        option.style.border = '2px solid #000';
+    });
+});
+
+
+    </script>
+    <script>
+       // JavaScript to handle color change and image update
+document.addEventListener("DOMContentLoaded", function () {
+    const mainImage = document.querySelector("#main-product-image");
+
+    // Select the thumbnails
+    const thumbnails = document.querySelectorAll(".thumbnail");
+
+    // Set the first image as the default
+    if (thumbnails.length > 0) {
+        const firstThumbnail = thumbnails[0];
+        mainImage.src = firstThumbnail.getAttribute("data-large-image");
+        firstThumbnail.classList.add("selected"); // Optionally add a selected class for styling
+    }
+
+    // Thumbnail click to update main image
+    thumbnails.forEach(thumb => {
+        thumb.addEventListener("click", function () {
+            // Remove the selected class from other thumbnails
+            thumbnails.forEach(t => t.classList.remove("selected"));
+            // Update the main image
+            mainImage.src = thumb.getAttribute("data-large-image");
+            // Add the selected class to the clicked thumbnail
+            thumb.classList.add("selected");
+        });
+    });
+});
+
+    </script>
+
+
+    <!-- Related Products -->
+    <!-- Related Products -->
+    <section class="">
+        <section class="wrapper">
+            <h3 class="mb-1 md:mb-3 text-[18px] md:text-[24px] font-semibold text-gray-700">Related Products</h3>
+            
+            <div class="relative flex items-center">
+                <!-- Left Slide Button -->
+                <button id="slideLeft" class="absolute left-[-10px] z-10 bg-gray-200 p-1 md:p-2 rounded-full shadow-lg focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 md:h-6 w-4 md:w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+
+                <!-- Scrollable Product Cards -->
+                <div id="slider" class="flex gap-5 smooth-scroll overflow-x-auto scrollbar-hide pb-2">
+                    {% for related in related_products %}
+                    <div class="min-w-[150px] md:min-w-[200px] max-w-[150px] md:max-w-[200px] shadow-lg rounded-xl relative">
+                        <div class="absolute right-2 top-5 p-2 rounded-full bg-gray-200">
+                            <a href="{% url 'wishlist:add' related.id %}">
+                                <img src="{% static './web/images/like.png' %}" alt="Add to Wishlist" class="w-[14px]">
+                            </a>
+                        </div>
+                        <a href="{% url 'product' related.id %}">
+                            <img src="{{ related.main_image.url }}" alt="{{ related.name }}" class="w-full rounded-lg">
+                        </a>
+                        <h3 class="text-[15px] pl-4 font-normal my-2">
+                            <a href="{% url 'product' related.id %}">
+                                {{ related.name }}
+                            </a>
+                        </h3>
+                        {% if related.original_price %}
+                        <p class="text-[10px] pl-4 line-through text-gray-500 font-semibold mb-2">${{ related.original_price }}</p>
+                        {% endif %}
+                        <p class="text-[14px] pl-4 font-semibold mb-2">${{ related.sale_price }}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <!-- Right Slide Button -->
+                <button id="slideRight" class="absolute right-[-10px] z-10 bg-gray-200 p-1 md:p-2 rounded-full shadow-lg focus:outline-none">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 md:h-6 w-4 md:w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+        </section>
+    </section>
+
+
+
+    <!-- product details -->
+
+    <section class="lg:px-[60px] sm:px-[40px] px-[16px] bg-[#FAFAFA] flex justify-center items-center">
+        <div class="bg-[#FFFFFF] rounded-[8px] py-[48px] sm:px-[32px] px-[18px] md:my-[80px]">
+            <div>
+                <h1 class="text-[24px] font-[500] leading-[32px] mb-[32px]">Details</h1>
+                <p class="text-[14px] font-[500] leading-[24px] text-[#9D9D9D] mb-[32px]">{{ product.details }}</p>
+            </div>
+            <div>
+                <h3 class="text-[20px] font-[500] leading-[24px] mb-[16px]">Specifications</h3>
+                <ul id="specifications" class="collapsed mb-[32px]">
+                    {% for spec in specifications %}
+                    <li class="flex justify-between pb-[8px]" style="border-bottom: 0.5px solid #CDCDCD">
+                        <p class="text-[16px] font-[400]">{{ spec.key }}</p>
+                        <span class="text-[15px] font-[400]">{{ spec.value }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+                <div class="flex justify-center items-center py-[12px] px-[56px] rounded-[8px] w-[208px] m-auto cursor-pointer" id="toggle-btn" style="border: 1px solid #545454">
+                    <span id="toggle-text" class="text-[14px] font-[500] leading-[24px]">View More</span>
+                    <i id="toggle-icon" class="bx bxs-chevron-down text-[24px]"></i>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+
+    <!-- Reviews -->
+
+    <section class="lg:px-[60px] sm:px-[40px] px-[16px] my-[88px]">
+        <div>
+            <h1 class="text-[24px] font-[500] leading-[32px] mb-[48px]">
+                Reviews
+            </h1>
+            {% for review in product.reviews.all %}
+            <ul class="flex bg-[#FAFAFA] py-[24px] rounded-[10px] mb-[24px]">
+                <li class="mr-[16px] pl-[16px] min-w-[56px]">
+                    <img src="{% static './web/images/default-user.png' %}" alt="user" class="w-[56px] h-[56px]">
+                </li>
+                <li class="pr-[28px]">
+                    <h4 class="text-[17px] font-[600]">{{ review.user.username }}</h4>
+                    <div class="flex pb-[12px]">
+                        <!-- Loop through filled stars -->
+                        {% for _ in review.rating|range_filter %}
+                            <img src="{% static './web/images/Star-4.png' %}" alt="star" class="h-[24px] w-[24px]">
+                        {% endfor %}
+                    
+                        <!-- Loop through empty stars -->
+                        {% for _ in 5|subtract:review.rating|range_filter %}
+                            <img src="{% static './web/images/Star-5.png' %}" alt="star" class="h-[24px] w-[24px]">
+                        {% endfor %}
+                    </div>
+                    
+                    <p class="sm:text-[15px] text-[12px] font-[500] sm:leading-[24px] text-[#7E7E7E]">
+                        {{ review.comment }}
+                    </p>
+                </li>
+            </ul>
+            {% empty %}
+            <p>No reviews yet. Be the first to leave a review!</p>
+            {% endfor %}
+        </div>
+    </section>
+    
+
+    
+
+
+
+
+<!-- footer -->
+
+
+{% include 'includes/footer.html' %}
+
+<script>
+    // JavaScript to toggle the mobile menu
+    const searchBar = document.getElementById('search-bar');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const profileMenuButton = document.getElementById('profile-menu-button');
+    const profileMenu = document.getElementById('profile-menu');
+
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        document.body.classList.toggle('overflow-hidden', !mobileMenu.classList.contains('hidden'));
+    });
+
+    // Hide mobile menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+            mobileMenu.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    });
+
+    // Toggle profile menu
+    profileMenuButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent the event from propagating to the document
+        profileMenu.classList.toggle('hidden');
+    });
+
+    // Hide profile menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!profileMenu.contains(event.target) && !profileMenuButton.contains(event.target)) {
+            profileMenu.classList.add('hidden');
+        }
+    });
+
+    // Hide profile menu on scroll
+    window.addEventListener('scroll', () => {
+        profileMenu.classList.add('hidden');
+    });
+
+
+
+    const slider = document.getElementById('slider');
+    const slideLeft = document.getElementById('slideLeft');
+    const slideRight = document.getElementById('slideRight');
+
+    slideLeft.addEventListener('click', () => {
+    slider.scrollBy({ left: -200, behavior: 'smooth' });
+    });
+
+    slideRight.addEventListener('click', () => {
+    slider.scrollBy({ left: 200, behavior: 'smooth' });
+    });
+
+
+
+     // JavaScript to scroll to the top
+     const scrollTopBtn = document.getElementById('scrollTopBtn');
+
+    // Show button when scrolling down
+    window.onscroll = function() {
+        if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+            scrollTopBtn.style.display = "block";
+        } else {
+            scrollTopBtn.style.display = "none";
+        }
+    };
+
+    // Scroll to the top when the button is clicked
+    scrollTopBtn.addEventListener('click', function() {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+
+
+          // Hide search bar on scroll
+          let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > lastScrollY) {
+            searchBar.classList.add('hidden');
+            mobileSearchBar.classList.add('hidden');
+        } else {
+            searchBar.classList.remove('hidden');
+            mobileSearchBar.classList.remove('hidden');
+        }
+        lastScrollY = window.scrollY;
+    });
+
+
+    // view more 
+
+    document.getElementById("toggle-btn").addEventListener("click", function () {
+    const specifications = document.getElementById("specifications");
+    const toggleText = document.getElementById("toggle-text");
+    const toggleIcon = document.getElementById("toggle-icon");
+
+    // Toggle the class
+    specifications.classList.toggle("collapsed");
+    specifications.classList.toggle("expanded");
+
+    // Update button text and icon
+    if (specifications.classList.contains("collapsed")) {
+        toggleText.textContent = "View More";
+        toggleIcon.classList.remove("bx-chevron-up");
+        toggleIcon.classList.add("bx-chevron-down");
+    } else {
+        toggleText.textContent = "View Less";
+        toggleIcon.classList.remove("bx-chevron-down");
+        toggleIcon.classList.add("bx-chevron-up");
+    }
+});
+
+</script>
+
+
+
+
+<!-- <script>
+    document.addEventListener("DOMContentLoaded", function () {
+    // Function to send an AJAX request
+    function updateProductDetails(params) {
+        const url = `/product/${params.productId}/?color_id=${params.colorId}&storage_value=${params.storageValue}&ram_value=${params.ramValue}`;
+        
+        fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+            .then(response => response.json())
+            .then(data => {
+                // Update the main image
+                const mainImage = document.getElementById("main-product-image");
+                mainImage.src = data.main_image_url;
+
+                // Update the thumbnails
+                const thumbnailContainer = document.getElementById("thumbnail-container");
+                thumbnailContainer.innerHTML = ""; // Clear current thumbnails
+                data.thumbnails.forEach(thumbnail => {
+                    const li = document.createElement("li");
+                    li.classList.add("thumbnail-item", "sm:min-w-[74.88px]", "min-w-[60px]", "sm:max-w-[74.88px]", "max-w-[60px]", "sm:min-h-[93px]", "min-h-[66px]", "h-[66px]", "mb-[24px]");
+                    
+                    const img = document.createElement("img");
+                    img.src = thumbnail.image_url;
+                    img.alt = thumbnail.alt_text;
+                    img.classList.add("thumbnail", "w-full", "h-full", "px-[6px]");
+                    
+                    li.appendChild(img);
+                    thumbnailContainer.appendChild(li);
+                });
+
+                // Update the product name
+                const productName = document.querySelector(".product-details h1");
+                productName.textContent = data.product_name;
+
+                // Update the price
+                const productPrice = document.querySelector(".product-details ul li:first-child");
+                productPrice.textContent = `$${data.price}`;
+            })
+            .catch(error => console.error("Error updating product details:", error));
+    }
+
+    // Add event listeners to color, storage, and RAM options
+    document.querySelectorAll(".color-option, .storage-option, .ram-option").forEach(option => {
+        option.addEventListener("click", function (event) {
+            event.preventDefault(); // Prevent default link behavior
+            
+            // Extract data from the clicked option
+            const urlParams = new URLSearchParams(this.href.split("?")[1]);
+            const colorId = urlParams.get("color_id");
+            const storageValue = urlParams.get("storage_value");
+            const ramValue = urlParams.get("ram_value");
+            
+            // Call the update function
+            updateProductDetails({
+                productId: "{{ product.id }}",
+                colorId: colorId || "",
+                storageValue: storageValue || "",
+                ramValue: ramValue || "",
+            });
+        });
+    });
+});
+
+</script> -->
+
+
+
+
+        <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+        <script src="./js/jquery-3.7.1.min.js"></script>
+        <script src="./js/index.js"></script>
+        {% endblock %}
+
+
+
+
+

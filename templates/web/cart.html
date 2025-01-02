@@ -1,0 +1,174 @@
+{% extends "base/base.html" %} {% block container %} {% load static %}
+
+{% include 'includes/header2.html' %}
+    
+    
+{% if cart_items %}
+
+<!-- cart content -->
+<section class="py-10 mt-[70px]">
+    <section class="wrapper">
+        <p class="text-[18px] font-semibold mb-7">Cart ({{ cart_items|length }} items)</p>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div class="col-span-1 md:col-span-3">
+                {% for item in cart_items %}
+                <div class="rounded-2xl p-5 border border-[#A41E11] mb-4">
+                    <div class="flex justify-between items-start">
+                        <div class="w-[20%]">
+                            <img src="{{ item.product.mainimage.url }}" alt="{{ item.product.name }}" class="w-full rounded-xl">
+                        </div>
+                        <div class="w-[77%]">
+                            <p class="text-[12px] sm:text-[16px] md:text-[18px] font-semibold mb-1 sm:mb-2 md:mb-4">{{ item.product.name }}</p>
+                            
+                            <!-- Display Option Details -->
+                            {% if item.options %}
+                            <ul class="text-[14px] mb-2">
+                                {% for key, value in item.options.items %}
+                                <li>{{ key|capfirst }}: {{ value }}</li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+                            
+                            <div class="flex justify-start items-center">
+                                {% if item.product.original_price %}
+                                <p class="line-through sm:text-[16px] md:text-[18px] mr-2">${{ item.product.original_price }}</p>
+                                {% endif %}
+                                <p class="mr-3 text-[14px] sm:text-[18px] md:text-[20px] font-semibold flex items-start">
+                                    {% if item.option %}
+                                    <span class="sm:text-[16px] md:text-[18px] mr-1">$ {{ item.option.sale_price }}</span>
+                                    {% else %}
+                                    <span class="sm:text-[16px] md:text-[18px] mr-1">$ {{ item.product.sale_price }}</span>
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="flex justify-start items-center rounded-full bg-white mt-2 md:mt-4">
+                                <a href="{% url 'web:cart_minus' id=item.id %}" class="block px-2 mr-3 rounded-full border border-[#A41E11] text-[#A41E11] text-[16px] font-semibold">-</a>
+                                <span class="text-[#A41E11] font-semibold text-[16px]">{{ item.quantity }}</span>
+                                <a href="{% url 'web:cart_plus' id=item.id %}" class="block px-2 ml-3 rounded-full border border-[#A41E11] bg-[#A41E11] text-white text-[16px] font-semibold">+</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="col-span-1">
+                <div class="p-5 rounded-2xl border border-[#A41E11] mb-4">
+                    <h3 class="text-[14px] font-normal mb-3">Summary</h3>
+            
+                    <!-- Coupon Code Section -->
+                    <form method="post" class="mb-4">
+                        {% csrf_token %}
+                        <label for="coupon" class="text-[14px]">Have a coupon?</label>
+                        <div class="flex mt-2">
+                            <input 
+                                type="text" 
+                                id="code" 
+                                name="code" 
+                                placeholder="Enter coupon code"
+                                class="outline-none w-full p-2 rounded-l-lg border border-[#A41E11] text-[14px]"
+                            >
+                            <button 
+                                type="submit" 
+                                class="bg-[#A41E11] text-white p-2 rounded-r-lg text-[14px] font-semibold"
+                            >
+                                Apply
+                            </button>
+                        </div>
+                    </form>
+            
+                    <!-- Price Summary -->
+                    <div class="flex justify-between items-center mb-2">
+                        <p class="text-[14px]">SubTotal :</p>
+                        <p class="text-[14px]">${{ total_price }}</p>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mb-2">
+                        <p class="text-[14px]">Discount :</p>
+                        <p class="text-[14px]">-${{ discount_amount }}</p>
+                    </div>
+            
+                    <div class="flex justify-between items-center mb-2">
+                        <p class="text-[14px]">Delivery Charge :</p>
+                        <p class="text-[14px]">${{ delivery_charge }}</p>
+                    </div>
+            
+                    <div class="flex justify-between items-center mb-5">
+                        <p class="text-[14px] font-bold">Total Amount to Pay:</p>
+                        <p class="text-[14px] font-bold">${{ total_amount_to_pay }}</p>
+                    </div>
+            
+                    <a 
+                        href="{% url 'web:checkout' %}" 
+                        class="w-full text-white text-[14px] rounded-full py-2 px-5 text-center block bg-[#A41E11]"
+                    >
+                        Proceed to checkout
+                    </a>
+                </div>
+            </div>            
+        </div>
+    </section>
+</section>
+
+{% else %}
+
+
+<section class="px-[15px] text-center mt-[100px]">
+    <div class="max-w-[620px] m-auto shadow-md offset-y-2 opacity-90 border-[1px] rounded-[5px] p-[20px]">
+        <img src="{% static 'web/images/empty_cart.png' %}" alt="empty cart" class="h-[150px] m-auto">
+        <h1 class="text-[24px] font-[600] mt-[20px]">Your Cart is Empty</h1>
+        <p class="text-[16px] mt-[10px]">Looks like you haven't added anything to your cart yet.</p>
+        <a href="{% url 'web:index' %}" class="block mt-[20px] px-[18px] py-[10px] bg-[#2AC489] text-white rounded-[5px] font-[500]">Shop Now</a>
+    </div>
+</section>
+
+{% endif %}
+
+
+
+<!-- footer -->
+
+
+
+<script>
+    // JavaScript to toggle the mobile menu
+    const searchBar = document.getElementById('search-bar');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+
+    const profileMenuButton = document.getElementById('profile-menu-button');
+    const profileMenu = document.getElementById('profile-menu');
+
+
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+    });
+    profileMenuButton.addEventListener('click', () => {
+        profileMenu.classList.toggle('hidden');
+    });
+
+
+          // Hide search bar on scroll
+          let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > lastScrollY) {
+            searchBar.classList.add('hidden');
+            mobileSearchBar.classList.add('hidden');
+        } else {
+            searchBar.classList.remove('hidden');
+            mobileSearchBar.classList.remove('hidden');
+        }
+        lastScrollY = window.scrollY;
+    });
+
+
+
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.4.0/flowbite.min.js"></script>
+
+<script src="/js/index.js"></script>
+
+
+{% endblock %}

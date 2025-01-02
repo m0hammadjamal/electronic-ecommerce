@@ -1,0 +1,101 @@
+{% extends "base/base.html" %}
+{% block container %}
+
+
+<header class="h-[80px]">
+    <button onclick="window.history.back()" class="hover:text-purple-500 font-semibold text-[18px] flex items-center relative top-[26px] left-[20px]">
+        <i class='text-[20px] md:text-[20px] mr-2 font-bold bx bx-arrow-back'></i>
+    </button>
+    <h1 class="text-black text-center text-[22px] font-[600]">{% if is_edit %}Edit{% else %}Add{% endif %} Address</h1>
+</header>
+
+<section class="py-10 bg-gray-50 min-h-screen flex items-center justify-center">
+    <section class="wrapper bg-white shadow-lg rounded-lg p-8 max-w-lg w-full">
+        <h2 class="text-2xl font-bold mb-6 text-gray-700">Add Address</h2>
+        <form method="post" action="{% if is_edit %}{% url 'web:edit_address' id=address.id %}{% else %}{% url 'web:add_address' %}{% endif %}" class="space-y-4">
+            {% csrf_token %}
+            
+            <div>
+                <label for="address1" class="block text-sm font-medium text-gray-600 mb-1">Address Line 1</label>
+                <input 
+                    id="address1" 
+                    type="text" 
+                    name="address1" 
+                    placeholder="Address Line 1" 
+                    value="{{ address.address1|default:'' }}" 
+                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    required>
+            </div>
+            
+            <div>
+                <label for="address2" class="block text-sm font-medium text-gray-600 mb-1">Address Line 2</label>
+                <input 
+                    id="address2" 
+                    type="text" 
+                    name="address2" 
+                    placeholder="Address Line 2" 
+                    value="{{ address.address2|default:'' }}" 
+                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            
+            <div>
+                <label for="city" class="block text-sm font-medium text-gray-600 mb-1">City</label>
+                <input 
+                    id="city" 
+                    type="text" 
+                    name="city" 
+                    placeholder="City" 
+                    value="{{ address.city|default:'' }}" 
+                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    required>
+            </div>
+            
+            <div>
+                <label for="state" class="block text-sm font-medium text-gray-600 mb-1">State</label>
+                <input 
+                    id="state" 
+                    type="text" 
+                    name="state" 
+                    placeholder="State" 
+                    value="{{ address.state|default:'' }}" 
+                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    required>
+            </div>
+            
+            <div>
+                <label for="pincode" class="block text-sm font-medium text-gray-600 mb-1">Pincode</label>
+                <input 
+                    id="pincode" 
+                    type="text" 
+                    name="pincode" 
+                    placeholder="Pincode" 
+                    value="{{ address.pincode|default:'' }}" 
+                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    required>
+            </div>
+            
+            <div>
+                <label for="address_type" class="block text-sm font-medium text-gray-600 mb-1">Address Type</label>
+                <select 
+                    id="address_type" 
+                    name="address_type" 
+                    class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                    required>
+                    <option value="" disabled {% if not address.address_type %}selected{% endif %}>Select Address Type</option>
+                    <option value="HM" {% if address.address_type == "HM" %}selected{% endif %}>Home</option>
+                    <option value="WO" {% if address.address_type == "WO" %}selected{% endif %}>Work</option>
+                    <option value="OT" {% if address.address_type == "OT" %}selected{% endif %}>Other</option>
+                </select>
+            </div>
+            
+            <div>
+                <button 
+                    type="submit" 
+                    class="w-full bg-blue-600 text-white py-2 px-4 rounded-lg shadow-lg hover:bg-blue-700 transition-all">
+                    {% if is_edit %}Update Address{% else %}Add Address{% endif %}
+                </button>
+            </div>
+        </form>        
+    </section>
+</section>
+{% endblock %}

@@ -1,0 +1,100 @@
+body{
+    font-family: "Poppins", sans-serif;
+}
+
+.wrapper{
+    width: 90%;
+    margin: 0 auto;
+}
+
+.product-bg {
+    border: 1px solid #FFF;
+    background: rgba(255, 255, 255, 0.20);
+    box-shadow: 20px 10px 50px 0px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(15px);
+}
+
+.rotate-negative {
+    transform: rotate(-90deg);
+}
+
+.smooth-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.smooth-scroll::-webkit-scrollbar-thumb {
+    display: none;
+}
+
+.smooth-scroll::-webkit-scrollbar-track {
+    display: none;
+}
+
+
+
+
+
+
+
+.rotate-180 {
+    transform: rotate(180deg);
+    transition: transform 0.3s ease; /* Smooth rotation */
+}
+
+
+.smooth-scroll::-webkit-scrollbar {
+    width: 2px;
+    border-radius: 2px; /* Set the width of the scrollbar */
+}
+
+/* Customize the scrollbar thumb (the draggable part) */
+.smooth-scroll::-webkit-scrollbar-thumb {
+    background-color: #5D5D5D; /* Set the color of the thumb */
+    border-radius: 24px;
+}
+
+/* Customize the scrollbar track (the non-draggable part) */
+.smooth-scroll::-webkit-scrollbar-track {
+    background-color: #D9D9D9; /* Set the color of the track */
+    border-radius: 24px;
+}
+
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px); /* Starts from the left */
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0); /* Ends in the correct position */
+    }
+}
+
+@keyframes fadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.fade-in {
+    animation: fadeIn 0.7s ease forwards; /* Fade in over 0.5 seconds */
+}
+
+.fade-out {
+    animation: fadeOut 0.7s ease forwards; /* Fade out over 0.5 seconds */
+}
+
+
+.overflow-hidden {
+    overflow: hidden;
+}
+#thumbnail-container .thumbnail-item {
+    width: 60px;
+    height: 66px;
+}
+
+#thumbnail-container .thumbnail {
+    width: 100%;
+    height: 100%;
+}

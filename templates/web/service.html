@@ -1,0 +1,378 @@
+{% extends "base/base.html" %} {% block container %} {% load static %}
+
+<style>
+    /* Disable background scrolling */
+/* Prevent background scrolling */
+.body-no-scroll {
+    overflow: hidden;
+}
+
+/* Ensure the modal content fits within the viewport */
+#request-modal .bg-white {
+    max-height: 90vh; /* Keeps the modal's height within the viewport */
+    overflow-y: auto; /* Adds scrolling for overflowing content */
+}
+
+
+.swip-container::-webkit-scrollbar {
+    width: 2px;
+    border-radius: 2px; /* Set the width of the scrollbar */
+}
+
+/* Customize the scrollbar thumb (the draggable part) */
+.swip-container::-webkit-scrollbar-thumb {
+    background-color: #5d5d5d; /* Set the color of the thumb */
+    border-radius: 24px;
+}
+
+/* Customize the scrollbar track (the non-draggable part) */
+.swip-container::-webkit-scrollbar-track {
+    background-color: #d9d9d9; /* Set the color of the track */
+    border-radius: 24px;
+}
+
+
+.spinner-border {
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid #A41E11; /* Your desired color */
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+</style>
+
+
+
+<header class="fixed top-0 left-0 w-full shadow-md bg-white z-50">
+    <section class="wrapper flex justify-between items-center h-[80px]">
+        <h1>
+            <a href="{% url 'web:index' %}">
+                <img src="{% static './web/images/logooo.png' %}" alt="logo" class="w-[50px] h-[50px]">
+            </a>
+        </h1>
+        
+        
+        <!-- <form action="/" method="get" class="w-[30%] hidden md:block">
+            <div class="flex justify-between items-center border hover:border-purple-500 rounded-full py-2 px-5">
+                <input type="text" name="q" class="outline-none w-full placeholder:text-[13px] font-thin" placeholder="What are you looking for?" required>
+                <button type="submit" class="w-[16px]">
+                    <img src="{% static './web/images/search.png' %}" alt="image" class="w-[16px]">
+                </button>
+            </div>
+        </form> -->
+        <div class="">
+            <ul class="flex justify-end items-center">   
+                <li class="mr-1 md:mr-7 hidden md:flex">                   
+                    <a href="service.html" class="text-[16px] font-semibold flex items-center hover:text-purple-500">
+                        <img class="h-[35px] md:h-[16px] mr-[5px]" src="{% static './web/images/service-icon.png' %}" alt="service">
+                        <p class="hidden md:block">Service</p>
+                    </a>
+                </li>             
+                <li class="mr-1 md:mr-7">                   
+                    <a href="whishlist.html" class="text-[16px] font-semibold flex items-center hover:text-purple-500">
+                        <i class='text-[35px] md:text-[16px] md:font-bold mr-[5px] bx bx-heart'></i>
+                        <p class="hidden md:block">Wishlist</p>
+                    </a>
+                </li>
+                <li class="mr-7 px-3 border-l border-r">
+                    <a href="cart.html" class="relative hover:text-purple-500">
+                        <i class='text-[35px] bx bx-cart'></i>
+                        <span class="absolute p-[3px] px-[6px] bg-gray-600 rounded-[100%] text-white text-[9px] top--18 right-[-8px]">
+                            2
+                        </span>
+                    </a>
+                </li>
+                <li id="profile-menu-button" class="mr-7 hidden md:block cursor-pointer hover:text-purple-500">                    
+                    <p class="text-[16px] font-semibold flex items-center">
+                        <i class='font-bold mr-[5px] bx bx-user'></i>
+                        <a>Account</a>
+                    </p>
+                </li>
+
+                <div id="profile-menu" class="hidden absolute z-50 top-[80px] bg-gray-100 right-[5%] border shadow rounded-b-xl p-5 w-[240px]">
+                    <p class="font-semibold border-b pb-2 hover:text-purple-500">My Account</p>
+                    <p class="text-[16px] py-2 hover:text-purple-500">
+                        <a href="account.html">Manage Profile</a>
+                    </p>
+                    <p class="text-[16px] py-2 hover:text-purple-500">
+                        <a href="orders.html">View Orders</a>
+                    </p>
+                    <p class="text-[16px] py-2 hover:text-purple-500 border-b">
+                        <a href="whishlist.html">Manage Whishlist</a>
+                    </p>
+                    <!-- <p class="text-[16px] py-2 hover:text-purple-500 border-b">
+                        <a href="#">Logout</a>
+                    </p> -->
+                    <p class="text-[16px] pt-2 hover:text-purple-500">
+                        <a href="login.html">Login</a>
+                    </p>
+                </div>
+
+                <li class="md:hidden">
+                    <img id="mobile-menu-button" src="{% static './web/images/menu.png' %}" alt="icon" class="w-[28px]">
+                </li>
+                <div id="mobile-menu" class="hidden fixed top-0 left-0 h-full z-50 w-[70%] bg-gray-200">
+                    <div class="h-[100px] bg-slate-600 p-4 flex justify-start items-center text-white">
+                        <img src="{% static './web/images/user.png' %}" alt="icon" class="w-[30px]">
+                        <div class="ml-3  hover:text-purple-500">
+                            <p class="text-[14px] font-semibold">
+                                MUHAMMAD
+                            </p>
+                            <a href="#" class="text-[14px] font-normal mb-1  hover:text-purple-500">
+                                My account
+                            </a>
+                        </div>
+                    </div>
+                    <div class="p-5">
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="#" class="text-[16px] font-semibold  hover:text-purple-500">All Categories</a>
+                        </p>
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="service.html" class="text-[16px] font-semibold hover:text-purple-500">Service</a>
+                        </p>
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="cart.html" class="text-[16px] font-semibold hover:text-purple-500">Cart</a>
+                        </p>
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="orders.html" class="text-[16px] font-semibold hover:text-purple-500">View Orders</a>
+                        </p>
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="account.html" class="text-[16px] font-semibold hover:text-purple-500">Manage Account</a>
+                        </p>
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="whishlist.html" class="text-[16px] font-semibold hover:text-purple-500">Manage Whishlist</a>
+                        </p>
+                        <!-- <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="#" class="text-[16px] font-semibold hover:text-purple-500">Logout</a>
+                        </p> -->
+                        <p class="pb-3 mb-3 border-b border-gray-300">
+                            <a href="login.html" class="text-[16px] font-semibold hover:text-purple-500">Login</a>
+                        </p>
+                    </div>
+
+                </div>
+            </ul>
+        </div>
+    </section>
+    <!-- <section class="wrapper pb-4 md:hidden">
+        <form action="" method="get" id="search-bar">
+            <div class="flex justify-between items-center border rounded-full py-2 px-5">
+                <input type="text" class="outline-none w-full placeholder:text-[13px] font-thin" name="q" placeholder="What are you looking for?">
+                <img src="{% static './web/images/search.png' %}" alt="image" class="w-[16px]">
+            </div>
+        </form>
+    </section> -->
+</header>
+
+<section class="py-10 md:py-14 mt-[70px]">
+    <section class="wrapper">
+        <h2 class="text-3xl font-semibold mb-6 text-center">Our Services</h2>
+        <p class="text-lg text-gray-600 mb-10 text-center">
+            We offer a variety of services to meet your needs and help you achieve your goals.
+        </p>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {% for service in services %}
+            <div class="p-6 border border-gray-300 rounded-xl shadow-md">
+                <img src="{{ service.image.url }}" alt="{{ service.title }}" class="w-full rounded-lg mb-4">
+                <h3 class="text-xl font-semibold mb-2">{{ service.title }}</h3>
+                <p class="text-gray-700 mb-4">
+                    {{ service.description }}
+                </p>
+                <!-- Request Service Button -->
+                <button class="text-[#A41E11] font-semibold open-modal-btn" data-service-id="{{ service.id }}" data-service-title="{{ service.title }}">
+                    Request Service &darr;
+                </button>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</section>
+
+<!-- Modal Template -->
+<div id="request-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden z-50">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-11/12 sm:w-10/12 md:w-1/2 lg:w-1/3 max-h-[90vh] overflow-y-auto swip-container">
+        <h2 id="modal-title" class="text-2xl font-semibold mb-4">Request a Service</h2>
+        <form id="request-service-form" method="POST">
+            {% csrf_token %}
+            <div class="mb-4">
+                <label for="name" class="block font-semibold mb-1">Your Name</label>
+                <input type="text" id="name" name="name" required class="w-full p-2 border rounded-lg" placeholder="Enter your name">
+            </div>
+            <div class="mb-4">
+                <label for="email" class="block font-semibold mb-1">Your Email</label>
+                <input type="email" id="email" name="email" class="w-full p-2 border rounded-lg" placeholder="Enter your email">
+            </div>
+            <div class="mb-4">
+                <label for="phone" class="block font-semibold mb-1">Your Phone</label>
+                <input type="text" id="phone" name="phone" required class="w-full p-2 border rounded-lg" placeholder="Enter your phone number">
+            </div>
+            <div class="mb-4">
+                <label for="service" class="block font-semibold mb-1">Select a Service</label>
+                <select id="service" name="service" required class="w-full p-2 border rounded-lg">
+                    <option value="" disabled selected>Select a service</option>
+                    {% for service in services %}
+                        <option value="{{ service.id }}">{{ service.title }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-4">
+                <label for="details" class="block font-semibold mb-1">Details</label>
+                <textarea id="details" name="details" required class="w-full p-2 border rounded-lg" placeholder="Provide details about your request"></textarea>
+            </div>
+            <button type="submit" class="w-full bg-[#A41E11] text-white py-2 rounded-lg font-semibold">Submit Request</button>
+        </form>
+        <button id="close-modal" class="mt-4 w-full bg-gray-200 text-gray-700 py-2 rounded-lg font-semibold">Close</button>
+    </div>
+</div>
+
+<div id="submit-animation" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden z-50">
+    <div class="text-white text-lg font-semibold">
+        <div class="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full text-[#A41E11]"></div>
+        <p class="mt-4">Submitting your request...</p>
+    </div>
+</div>
+
+
+
+<script>
+    const openModalButtons = document.querySelectorAll('.open-modal-btn');
+    const modal = document.getElementById('request-modal');
+    const modalTitle = document.getElementById('modal-title');
+    const requestServiceForm = document.getElementById('request-service-form');
+    const closeModalButton = document.getElementById('close-modal');
+    const submitAnimation = document.getElementById('submit-animation');
+    const body = document.body;
+
+    // Open modal
+    openModalButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const serviceTitle = button.getAttribute('data-service-title');
+            modalTitle.textContent = `Request Service: ${serviceTitle}`;
+            requestServiceForm.action = `/request/service/`;
+            modal.classList.remove('hidden');
+            body.classList.add('body-no-scroll');
+        });
+    });
+
+    // Close modal
+    closeModalButton.addEventListener('click', () => {
+        modal.classList.add('hidden');
+        body.classList.remove('body-no-scroll');
+    });
+
+    window.addEventListener('click', (event) => {
+        if (event.target === modal) {
+            modal.classList.add('hidden');
+            body.classList.remove('body-no-scroll');
+        }
+    });
+
+    // Submit form with AJAX
+    requestServiceForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        submitAnimation.classList.remove('hidden');
+
+        const formData = new FormData(requestServiceForm);
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        try {
+            const response = await fetch(requestServiceForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-CSRFToken': csrftoken },
+            });
+
+            if (response.ok) {
+                submitAnimation.innerHTML = `<p class="text-white text-lg font-semibold">Request submitted successfully!</p>`;
+                setTimeout(() => {
+                    submitAnimation.classList.add('hidden');
+                    window.location.href = '/service';
+                }, 2000);
+            } else {
+                throw new Error('Submission failed');
+            }
+        } catch {
+            submitAnimation.innerHTML = `<p class="text-white text-lg font-semibold">An error occurred. Please try again.</p>`;
+            setTimeout(() => submitAnimation.classList.add('hidden'), 2000);
+        }
+    });
+</script>
+
+
+
+<!-- footer -->
+
+
+{% include 'includes/footer.html' %}
+
+<script>
+    // JavaScript to toggle the mobile menu
+    document.addEventListener('DOMContentLoaded', () => {
+    // Get elements
+    const searchBar = document.getElementById('search-bar');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const profileMenuButton = document.getElementById('profile-menu-button');
+    const profileMenu = document.getElementById('profile-menu');
+
+    // Toggle mobile menu
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        document.body.classList.toggle('overflow-hidden', !mobileMenu.classList.contains('hidden'));
+    });
+
+    // Hide mobile menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+            mobileMenu.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    });
+
+    // Toggle profile menu
+    profileMenuButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent the event from propagating to the document
+        profileMenu.classList.toggle('hidden');
+    });
+
+    // Hide profile menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!profileMenu.contains(event.target) && !profileMenuButton.contains(event.target)) {
+            profileMenu.classList.add('hidden');
+        }
+    });
+
+    // Hide profile menu on scroll
+    window.addEventListener('scroll', () => {
+        profileMenu.classList.add('hidden');
+    });
+
+    // Hide search bar on scroll
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > lastScrollY) {
+            searchBar.classList.add('hidden');
+        } else {
+            searchBar.classList.remove('hidden');
+        }
+        lastScrollY = window.scrollY;
+    });
+});
+
+</script>
+        <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+        <script src="./js/jquery-3.7.1.min.js"></script>
+        <script src="./js/index.js"></script>
+        {% endblock %}

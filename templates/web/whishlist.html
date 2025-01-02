@@ -1,0 +1,113 @@
+{% extends "base/base.html" %} {% block container %} {% load static %}
+
+
+
+{% include 'includes/header2.html' %}
+
+
+<section class="py-10 md:py-14 md:mt-[70px] mt-[130px]">
+    <section class="wrapper">
+        <p class="text-[18px] font-semibold mb-7 flex items-center">
+            <button onclick="window.history.back()" class="hover:text-purple-500 font-semibold text-[18px] flex items-center">
+                <i class='text-[20px] md:text-[20px] mr-2 font-bold bx bx-arrow-back'></i>
+            </button>
+            My Wishlist
+        </p>
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 md:gap-10">
+            {% for item in wishlist_items %}
+            <div class="col-span-1 p-3 shadow-lg rounded-xl relative">
+                <!-- Remove button -->
+                <div class="absolute right-5 top-5 p-2 rounded-full bg-gray-200">
+                    <a href="{% url 'web:remove_from_wishlist' id=item.product.id %}">
+                        <img src="{% static 'web/images/like.png' %}" alt="Remove from wishlist" class="w-[14px]">
+                    </a>
+                </div>
+
+                <!-- Product image -->
+                <a href="{% url 'web:product' id=item.product.id %}">
+                    <img src="{{ item.product.mainimage.url }}" alt="{{ item.product.name }}" class="w-full rounded-lg">
+                </a>
+
+                <!-- Product name -->
+                <h3 class="text-[15px] font-normal my-2">
+                    <a href="{% url 'web:product' id=item.product.id %}">
+                        {{ item.product.name }}
+                    </a>
+                </h3>
+
+                <!-- Price details -->
+                {% if item.product.sale_price < item.product.original_price %}
+                <p class="text-[10px] line-through text-gray-500 font-semibold mb-2">
+                    ${{ item.product.original_price }}
+                </p>
+                {% endif %}
+                <p class="text-[14px] font-semibold mb-2">${{ item.product.sale_price }}</p>
+            </div>
+            {% empty %}
+            <p class="text-[14px] font-semibold col-span-2 sm:col-span-3 md:col-span-4 text-center">Your wishlist is empty!</p>
+            {% endfor %}
+        </div>
+    </section>
+</section>
+
+
+<!-- footer -->
+
+
+
+<script>
+    // JavaScript to toggle the mobile menu
+    const searchBar = document.getElementById('search-bar');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const profileMenuButton = document.getElementById('profile-menu-button');
+    const profileMenu = document.getElementById('profile-menu');
+
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        document.body.classList.toggle('overflow-hidden', !mobileMenu.classList.contains('hidden'));
+    });
+
+    // Hide mobile menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+            mobileMenu.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    });
+
+    // Toggle profile menu
+    profileMenuButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent the event from propagating to the document
+        profileMenu.classList.toggle('hidden');
+    });
+
+    // Hide profile menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!profileMenu.contains(event.target) && !profileMenuButton.contains(event.target)) {
+            profileMenu.classList.add('hidden');
+        }
+    });
+
+    // Hide profile menu on scroll
+    window.addEventListener('scroll', () => {
+        profileMenu.classList.add('hidden');
+    });
+
+          // Hide search bar on scroll
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > lastScrollY) {
+            searchBar.classList.add('hidden');
+            mobileSearchBar.classList.add('hidden');
+        } else {
+            searchBar.classList.remove('hidden');
+            mobileSearchBar.classList.remove('hidden');
+        }
+        lastScrollY = window.scrollY;
+    });
+</script>
+        <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
+        <script src="./js/jquery-3.7.1.min.js"></script>
+        <script src="./js/index.js"></script>
+        {% endblock %}

@@ -1,0 +1,162 @@
+{% extends "base/base.html" %}
+{% block container %}
+{% load static %}
+
+<style>
+.swip-container::-webkit-scrollbar {
+    width: 2px;
+    border-radius: 2px; /* Set the width of the scrollbar */
+}
+
+/* Customize the scrollbar thumb (the draggable part) */
+.swip-container::-webkit-scrollbar-thumb {
+    background-color: #5d5d5d91; /* Set the color of the thumb */
+    border-radius: 24px;
+}
+
+/* Customize the scrollbar track (the non-draggable part) */
+.swip-container::-webkit-scrollbar-track {
+    background-color: #d9d9d98e; /* Set the color of the track */
+    border-radius: 24px;
+}
+</style>
+
+<section class="py-10 mt-[7px]">
+    <section class="wrapper">
+        <p class="text-[18px] font-semibold mb-7 flex items-center">
+            <button onclick="window.history.back()" class="hover:text-purple-500 font-semibold text-[18px] flex items-center">
+                <i class='text-[20px] md:text-[20px] mr-2 font-bold bx bx-arrow-back'></i>
+            </button>
+            Checkout
+        </p>
+        <form action="" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-5 gap-10">
+
+                <!-- Contact Information Section -->
+                <div class="col-span-1 md:col-span-3">
+                    <h3 class="text-[18px] font-semibold mb-5">Contact Information</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-10">
+                        <div class="p-1 border rounded-xl px-5 col-span-1">
+                            <input type="text" class="w-full py-3 bg-white text-gray-500 placeholder:text-gray-400 placeholder:text-[13px] text-[14px] outline-none" 
+                            required name="first_name" placeholder="First Name" value="{{ request.user.first_name }}">
+                        </div>
+                        <div class="p-1 border rounded-xl px-5 col-span-1">
+                            <input type="text" class="w-full py-3 bg-white text-gray-500 placeholder:text-gray-400 placeholder:text-[13px] text-[14px] outline-none" 
+                            required name="last_name" placeholder="Last Name" value="{{ request.user.last_name }}">
+                        </div>
+                        <div class="p-1 border rounded-xl px-5 col-span-1">
+                            <input type="email" class="w-full py-3 bg-white text-gray-500 placeholder:text-gray-400 placeholder:text-[13px] text-[14px] outline-none" 
+                            required name="email" placeholder="Email" value="{{ request.user.email }}">
+                        </div>
+                        <div class="p-1 border rounded-xl px-5 col-span-1">
+                            <input type="text" class="w-full py-3 bg-white text-gray-500 placeholder:text-gray-400 placeholder:text-[13px] text-[14px] outline-none" 
+                            required name="phone_number" placeholder="Phone Number">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Selection Section -->
+                <div class="col-span-1 md:col-span-3">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-[18px] font-semibold mb-5">Select Address</h3>
+                        <a href="{% url 'web:add_address' %}?next={{ request.path }}" class="text-green-600 hover:text-green-800 flex items-center space-x-1">
+                            <i class="bx bx-plus-circle text-lg"></i>
+                            <span class="text-sm">Add Address</span>
+                        </a>                                               
+                    </div>
+                    <div class="relative max-h-[210px] overflow-y-auto swip-container">
+                        <div class="space-y-4 pr-1">
+                            {% for address in addresses %}
+                            <div class="p-4 border rounded-lg flex items-center justify-between bg-gray-50 hover:bg-gray-100 transition">
+                                <div>
+                                    <p class="text-[14px] font-semibold">{{ address.address1 }}, {{ address.address2 }}</p>
+                                    <p class="text-[13px] text-gray-500">{{ address.city }}, {{ address.state }}, {{ address.pincode }}</p>
+                                    <p class="text-[13px] text-gray-500">Type: {{ address.get_address_type_display }}</p>
+                                </div>
+                                <div class="flex justify-end items-center space-x-3">
+                                    <a href="{% url 'web:edit_address' id=address.id %}?next={{ request.path }}" class="text-blue-600 hover:text-blue-800 flex items-center space-x-1">
+                                        <i class="bx bx-edit text-lg"></i>
+                                        <span class="text-sm">Edit</span>
+                                    </a>
+                                    <form action="{% url 'web:delete_address' id=address.id %}?next={{ request.path }}" method="post" class="inline-block">
+                                        {% csrf_token %}
+                                        <button type="submit" class="text-red-600 hover:text-red-800 flex items-center space-x-1">
+                                            <i class="bx bx-trash text-lg"></i>
+                                            <span class="text-sm">Delete</span>
+                                        </button>
+                                    </form>
+                                </div>
+                                <div>
+                                    <input type="radio" name="address_id" value="{{ address.id }}" class="h-5 w-5 accent-[#A41E11]" required>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Payment Method Section -->
+                <div class="col-span-1 md:col-span-3 mt-10">
+                    <h3 class="text-[18px] font-semibold mb-5">Payment Method</h3>
+                    <div class="space-y-3">
+                        <label class="flex items-center space-x-3 py-3 px-5 border rounded-md shadow-md cursor-pointer hover:bg-gray-100 transition">
+                            <input type="radio" name="payment_method" value="COD" class="appearance-none border-2 border-gray-400 rounded-full h-5 w-5 checked:border-blue-600 checked:bg-blue-600 focus:outline-none">
+                            <span class="text-gray-700 text-[14px] font-medium">Cash On Delivery</span>
+                        </label>
+                        <label class="flex items-center space-x-3 py-3 px-5 border rounded-md shadow-md cursor-pointer hover:bg-gray-100 transition">
+                            <input type="radio" name="payment_method" value="CARD" class="appearance-none border-2 border-gray-400 rounded-full h-5 w-5 checked:border-blue-600 checked:bg-blue-600 focus:outline-none">
+                            <span class="text-gray-700 text-[14px] font-medium">Credit/Debit Card</span>
+                        </label>
+                        <label class="flex items-center space-x-3 py-3 px-5 border rounded-md shadow-md cursor-pointer hover:bg-gray-100 transition">
+                            <input type="radio" name="payment_method" value="UPI" class="appearance-none border-2 border-gray-400 rounded-full h-5 w-5 checked:border-blue-600 checked:bg-blue-600 focus:outline-none">
+                            <span class="text-gray-700 text-[14px] font-medium">UPI</span>
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Order Summary Section -->
+                <div class="col-span-1 md:col-span-2 md:fixed md:right-[30px] lg:right-[100px] md:top-[150px] md:w-[300px]">
+                    <div class="p-5 sm:p-7 md:p-10 rounded-2xl shadow-2xl mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <p class="text-[14px] font-thin opacity-80">SubTotal</p>
+                            <p class="text-[14px] flex items-start"><span class="text-[12px] mr-1">$</span> {{ subtotal }}</p>
+                        </div>
+                        <div class="flex justify-between items-center mb-2">
+                            <p class="text-[14px] font-thin opacity-80">Discount</p>
+                            <p class="text-[14px] flex items-start"><span class="text-[12px] mr-1">$</span> {{ discount }}</p>
+                        </div>
+                        <div class="flex justify-between items-center mb-4">
+                            <p class="text-[14px] font-thin opacity-80">Shipping</p>
+                            <p class="text-[14px] flex items-start"><span class="text-[12px] mr-1">$</span> Free</p>
+                        </div>
+                        <div class="mb-5 border-b"></div>
+                        <div class="flex justify-between items-center mb-7">
+                            <p class="text-[16px] font-semibold opacity-80">TOTAL</p>
+                            <p class="text-[16px] font-semibold flex items-start"><span class="text-[12px] mr-1">$</span> {{ total }}</p>
+                        </div>
+                        <button type="submit" class="w-full text-white text-[16px] font-semibold rounded-full py-3 px-5 text-center block bg-[#A41E11]">
+                            Checkout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </section>
+</section>
+
+<script>
+const slider = document.getElementById("address-slider");
+const prev = document.getElementById("prev-slide");
+const next = document.getElementById("next-slide");
+
+prev.addEventListener("click", () => {
+    slider.scrollBy({ left: -slider.clientWidth, behavior: "smooth" });
+});
+
+next.addEventListener("click", () => {
+    slider.scrollBy({ left: slider.clientWidth, behavior: "smooth" });
+});
+</script>
+
+{% endblock %}

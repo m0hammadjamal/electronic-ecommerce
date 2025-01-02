@@ -1,0 +1,448 @@
+{% extends "base/base.html" %} {% block container %} {% load static %}
+
+{% include 'includes/header.html' %}
+
+
+<style>
+    .swip-container::-webkit-scrollbar {
+    width: 2px;
+    border-radius: 2px; /* Set the width of the scrollbar */
+}
+
+/* Customize the scrollbar thumb (the draggable part) */
+.swip-container::-webkit-scrollbar-thumb {
+    background-color: #5d5d5d00; /* Set the color of the thumb */
+    border-radius: 24px;
+}
+
+/* Customize the scrollbar track (the non-draggable part) */
+.swip-container::-webkit-scrollbar-track {
+    background-color: #d9d9d900; /* Set the color of the track */
+    border-radius: 24px;
+}
+
+</style>
+
+
+
+
+<!-- slider -->
+
+
+<section class="w-[95%] m-auto pt-5 md:pb-10 pb-2 md:mt-[70px] mt-[130px]">
+    <section class="swiper mySwiper">
+        <div class="swiper-wrapper">
+            {% for slider in slider %}
+            <div class="swiper-slide">
+                <a href="{{ slider.url }}" class="w-full block ">
+                    <img src="{{slider.image.url}}" alt="banner" class="w-full block rounded-lg object-cover">
+                </a>                
+            </div>       
+            {% endfor %}         
+        </div>
+    </section>
+</section>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var swiper = new Swiper(".mySwiper", {
+      centeredSlides: false,
+      breakpoints: {
+          480: {
+            slidesPerView: 1
+        }
+      },
+      autoplay: {
+        delay: 2000,
+      },
+      pagination: {                      
+        el: '.swiper-pagination',
+    },
+  });
+
+});
+</script>
+
+
+<!-- product category -->
+
+
+<section class="bg-gray-100 py-2 md:py-5">
+    <div class="relative flex items-center wrapper">
+        <!-- Left Slide Button -->
+        <button id="slideLeftthree" class="absolute left-0 z-10 bg-gray-200 p-[2px] sm:p-1 md:p-2 rounded-full shadow-lg focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 lg:h-6 w-2 md:w-4 lg:w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </button>
+
+        <!-- Scrollable Product Cards -->
+        <div id="sliderthree" class="flex justify-start w-full swip-container overflow-x-auto scrollbar-hide">
+            <!-- Category Card -->
+            {% for category in category %}
+            <div class="group hover:shadow-md transition-shadow duration-300 rounded-lg bg-white p-2 sm:p-2 md:p-3 lg:p-4 flex flex-col items-center min-w-[50px] sm:min-w-[65px] md:min-w-[90px] lg:min-w-[125px] max-w-[50px] sm:max-w-[65px] md:max-w-[90px] lg:max-w-[125px] mr-[20px]">
+                <a href="{% url 'web:category' id=category.id %}" class="flex flex-col items-center">
+                    <div class="rounded-full p-[6px] sm:p-[10px] md:p-[10px] lg:p-[16px] mb-[6px] md:mb-2 lg:mb-3 border border-gray-300 group-hover:scale-105 transform transition duration-300">
+                        <img src="{{ category.image.url }}" alt="watch" class="w-[20px] sm:w-[25px] md:w-[30px] lg:w-[40px] h-[20px] sm:h-[25px] md:h-[30px] lg:h-[40px]">
+                    </div>
+                    <p class="text-[6px] sm:text-[8px] leading-[8px] md:text-xs lg:text-sm font-medium text-gray-800 group-hover:text-gray-600 transition duration-300">{{ category.name }}</p>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+        
+
+        <!-- Right Slide Button -->
+        <button id="slideRightthree" class="absolute right-0 z-10 bg-gray-200 p-[2px] sm:p-1 md:p-2 rounded-full shadow-lg focus:outline-none">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 lg:h-6 w-2 md:w-4 lg:w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
+    </div>
+</section>
+
+
+
+<script>
+    const sliderthree = document.getElementById('sliderthree');
+    const slideLeftthree = document.getElementById('slideLeftthree');
+    const slideRightthree = document.getElementById('slideRightthree');
+
+    slideLeftthree.addEventListener('click', () => {
+        console.log('Left button clicked');
+        sliderthree.scrollBy({ left: -200, behavior: 'smooth' });
+    });
+
+    slideRightthree.addEventListener('click', () => {
+        console.log('Right button clicked');
+        sliderthree.scrollBy({ left: 200, behavior: 'smooth' });
+    });
+
+    function checkOverflow() {
+        const isOverflowing = sliderthree.scrollWidth > sliderthree.clientWidth;
+        console.log('Overflow:', isOverflowing);
+        slideLeftthree.style.display = isOverflowing ? 'block' : 'none';
+        slideRightthree.style.display = isOverflowing ? 'block' : 'none';
+    }
+
+    window.addEventListener('load', checkOverflow);
+    window.addEventListener('resize', checkOverflow);
+</script>
+
+
+
+
+<!-- new arrival -->
+
+
+
+<section class="py-6 md:py-14">
+    <section class="wrapper">
+        <h3 class="mb-1 md:mb-3 text-[18px] md:text-[24px] font-semibold text-gray-700">New Arrival</h3>
+        
+        <div class="relative flex items-center">
+            <!-- Left Slide Button -->
+            <button id="slideLeft" class="absolute left-[-10px] z-10 bg-gray-200 p-1 md:p-2 rounded-full shadow-lg focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 md:h-6 w-4 md:w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+
+            <!-- Scrollable Product Cards -->
+            <div id="slider" class="flex gap-5 swip-container overflow-x-auto scrollbar-hide pb-2">
+                
+                <!-- Product Cards -->
+                <!-- Product -->   
+                {% for i in insatnces %}             
+                <div class="min-w-[150px] md:min-w-[200px] max-w-[150px] md:max-w-[200px] shadow-lg rounded-xl relative">
+                    <!-- <div class="absolute right-2 top-5 p-2 rounded-full bg-gray-200">
+                        <a href="#">
+                            <img src="{% static './web/images/like.png' %}" alt="image" class="w-[14px]">
+                        </a>
+                    </div> -->
+                    <a href="{% url 'web:product' id=i.id %}" class="">
+                        <img src="{{i.mainimage.url}}" alt="image" class="w-full rounded-lg">
+                    </a>
+                    <h3 class="text-[15px] pl-4 font-normal my-2">
+                        <a href="{% url 'web:product' id=i.id %}">
+                            {{i.name}}
+                        </a>
+                    </h3>
+                    <p class="text-[10px] pl-4 line-through text-gray-500 font-semibold mb-2">${{ i.regular_price }}</p>
+                    <p class="text-[14px] pl-4 font-semibold mb-2">${{ i.sale_price }}</p>
+                    <!-- <a href="#"></a> -->
+                </div>
+                {% endfor %}
+            </div>
+            <!-- Right Slide Button -->
+            <button id="slideRight" class="absolute right-[-10px] z-10 bg-gray-200 p-1 md:p-2 rounded-full shadow-lg focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 md:h-6 w-4 md:w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+    </section>
+</section>
+
+
+
+
+
+
+
+<!-- offer images -->
+
+<section class="pb-5 md:py-10">
+    <div class="wrapper mx-auto px-2 md:px-3">
+        <div class="flex flex-row gap-4">
+            {% for offer in offer %}
+            <!-- Image Card 1 -->
+            <a href="{{ offer.url }}" class="relative w-full sm:w-1/2 md:w-1/3 overflow-hidden shadow-lg">
+                <img src="{{offer.image.url}}" alt="Mobile Phones Discount" class="w-full h-full object-cover">
+                <div class="absolute inset-0 flex items-center justify-center ">                    
+                </div>
+            </a>  
+            {% endfor %}      
+
+        </div>
+    </div>
+</section>
+
+
+
+
+<!-- Top brands -->
+
+
+
+
+<section class="">
+    <section class="">
+        <div class="wrapper">
+            <h3 class="mb-1 md:mb-3 text-[18px] md:text-[24px] font-semibold text-gray-700">Top Brands</h3>
+        </div>
+        <div class="w-full py-5">
+            <div class="wrapper">
+                <div class="swiper-container flex justify-start items-center overflow-x-scroll w-full whitespace-nowrap space-x-5 swip-container">   
+                    <div class="swiper-wrapper flex items-center">
+                        {% for brand in brands %}
+                        <div class="swiper-slide">
+                            <a href="{% url 'web:brand' id=brand.id %}" class="w-full inline-block">
+                                <img src="{{brand.image.url}}" alt="brand" class="max-w-[50px] min-w-[50px] md:max-w-[80px] md:min-w-[80px]">
+                            </a>
+                        </div>
+                        {% endfor %}
+                    </div>       
+                </div>
+            </div>
+        </div>
+        
+    </section>
+</section>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+  var swiper = new Swiper(".swiper-container", {
+    slidesPerView: 5,
+    centeredSlides: false,
+    breakpoints: {
+      640: {
+        slidesPerView: 6,
+    },
+    768: {
+        slidesPerView: 8,
+    },
+    },
+    autoplay: {
+      delay: 2000,
+    },
+    pagination: {                      
+      el: '.swiper-paginationone',
+  },
+});
+
+});
+</script>
+
+
+
+<!-- best selling -->
+
+<section class="py-6 md:py-14">
+    <section class="wrapper">
+        <h3 class="mb-1 md:mb-3 text-[18px] md:text-[24px] font-semibold text-gray-700">Best Selling</h3>
+
+        <div class="relative flex items-center">
+            <!-- Left Slide Button -->
+            <button id="slideLeftone" class="absolute left-[-10px] z-10 bg-gray-200 p-1 md:p-2 rounded-full shadow-lg focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 md:h-6 w-4 md:w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+
+            <!-- Scrollable Product Cards -->
+            <div id="sliderone" class="flex gap-5 swip-container overflow-x-auto scrollbar-hide pb-2">
+                {% for product in best_selling_products %}
+                <div class="min-w-[150px] md:min-w-[200px] max-w-[150px] md:max-w-[200px] shadow-lg rounded-xl relative">                    
+                    <a href="{% url 'web:product' product.id %}">
+                        <img src="{{ product.mainimage.url }}" alt="{{ product.name }}" class="w-full rounded-lg">
+                    </a>
+                    <h3 class="text-[15px] pl-4 font-normal my-2">
+                        <a href="{% url 'web:product' product.id %}">
+                            {{ product.name }}
+                        </a>
+                    </h3>
+                    {% if product.regular_price %}
+                    <p class="text-[10px] pl-4 line-through text-gray-500 font-semibold mb-2">
+                        ${{ product.regular_price }}
+                    </p>
+                    {% endif %}
+                    <p class="text-[14px] pl-4 font-semibold mb-2">${{ product.sale_price }}</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Right Slide Button -->
+            <button id="slideRightone" class="absolute right-[-10px] z-10 bg-gray-200 p-1 md:p-2 rounded-full shadow-lg focus:outline-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 md:h-6 w-4 md:w-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+        </div>
+    </section>
+</section>
+
+
+
+<!-- offer images -->
+
+
+
+<div class="container mx-auto px-4 py-4 md:py-8">
+    {% if offers %}
+    <!-- Main Grid Container -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <!-- Large Image Box -->
+        <a href="{{ offers.url1 }}" class="block md:col-span-2 relative bg-black text-white rounded-lg overflow-hidden">
+            <img src="{{ offers.image1.url }}" alt="Laptop Discount" class="w-full h-full object-cover opacity-80">            
+        </a>
+
+        <!-- Right Column (Two Small Boxes) -->
+        <div class="grid grid-rows-2 gap-4">
+            <!-- Top Small Image Box -->
+            <a href="{{ offers.url2 }}" class="block relative bg-blue-500 text-white rounded-lg overflow-hidden">
+                <img src="{{ offers.image2.url }}" alt="Desktop Discount" class="w-full h-full object-cover opacity-80">                
+            </a>
+
+            <!-- Bottom Small Image Box -->
+            <a href="{{ offers.url3 }}" class="block relative bg-blue-700 text-white rounded-lg overflow-hidden">
+                <img src="{{ offers.image3.url }}" alt="Gaming Laptops" class="w-full h-full object-cover opacity-80">                
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div></div>
+    {% endif %}
+</div>
+
+
+
+
+
+{% include 'includes/footer.html' %}
+
+
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.4.0/flowbite.min.js"></script>
+
+<script src="/js/index.js"></script>
+<script>
+    // JavaScript to toggle the mobile menu
+    const searchBar = document.getElementById('search-bar');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const profileMenuButton = document.getElementById('profile-menu-button');
+    const profileMenu = document.getElementById('profile-menu');
+
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        document.body.classList.toggle('overflow-hidden', !mobileMenu.classList.contains('hidden'));
+    });
+
+    // Hide mobile menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+            mobileMenu.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    });
+
+    // Toggle profile menu
+    profileMenuButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent the event from propagating to the document
+        profileMenu.classList.toggle('hidden');
+    });
+
+    // Hide profile menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!profileMenu.contains(event.target) && !profileMenuButton.contains(event.target)) {
+            profileMenu.classList.add('hidden');
+        }
+    });
+
+    // Hide profile menu on scroll
+    window.addEventListener('scroll', () => {
+        profileMenu.classList.add('hidden');
+    });
+
+
+    const slider = document.getElementById('slider');
+    const slideLeft = document.getElementById('slideLeft');
+    const slideRight = document.getElementById('slideRight');
+
+    slideLeft.addEventListener('click', () => {
+    slider.scrollBy({ left: -200, behavior: 'smooth' });
+    });
+
+    slideRight.addEventListener('click', () => {
+    slider.scrollBy({ left: 200, behavior: 'smooth' });
+    });
+
+
+
+    const sliderone = document.getElementById('sliderone');
+    const slideLeftone = document.getElementById('slideLeftone');
+    const slideRightone = document.getElementById('slideRightone');
+
+    slideLeftone.addEventListener('click', () => {
+    sliderone.scrollBy({ left: -200, behavior: 'smooth' });
+    });
+
+    slideRightone.addEventListener('click', () => {
+    sliderone.scrollBy({ left: 200, behavior: 'smooth' });
+    });
+
+
+
+    
+    // Hide search bar on scroll
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > lastScrollY) {
+            searchBar.classList.add('hidden');
+            mobileSearchBar.classList.add('hidden');
+        } else {
+            searchBar.classList.remove('hidden');
+            mobileSearchBar.classList.remove('hidden');
+        }
+        lastScrollY = window.scrollY;
+    });
+    
+
+    
+</script>
+{% endblock %}
