@@ -1,0 +1,139 @@
+{% load static %}
+<!--*******************
+     Preloader start
+ ********************-->
+ <div id="preloader">
+     <div class="loader">
+         <svg class="circular" viewBox="25 25 50 50">
+             <circle class="path" cx="50" cy="50" r="20" fill="none" stroke-width="3" stroke-miterlimit="10" />
+         </svg>
+     </div>
+ </div>
+ <!--*******************
+     Preloader end
+ ********************-->
+
+ 
+ <!--**********************************
+     Main wrapper start
+ ***********************************-->
+ <div id="main-wrapper">
+
+     <!--**********************************
+         Nav header start
+     ***********************************-->
+     <div class="nav-header">
+         <div class="brand-logo">
+             <a href="{% url 'managers:index' %}" style="display: flex; justify-content: start; align-items: center;">
+                 <i class="fa-solid fa-table-columns" style="font-size: 22px; color: #fff; margin-right: 8px; margin-bottom: 0.5rem;"></i>
+                 <h2 class="text-white" style="font-size: 18px;">DASHBOARD</h2>
+             </a>
+         </div>
+     </div>
+     <!--**********************************
+         Nav header end
+     ***********************************-->
+
+     <!--**********************************
+         Header start
+     ***********************************-->
+     <div class="header">    
+         <div class="header-content clearfix">
+             
+             <div class="nav-control">
+                 <div class="hamburger">
+                     <span class="toggle-icon"><i class="icon-menu"></i></span>
+                 </div>
+             </div>
+             
+             <div class="header-right">
+                 <ul class="clearfix">
+                     <li class="icons dropdown">
+                         <div class="user-img c-pointer position-relative"   data-toggle="dropdown">
+                             <span class="activity active"></span>
+                             <img src="{% static './images/user/1.jpg' %}" height="40" width="40" alt="">
+                         </div>
+                         <div class="drop-down dropdown-profile dropdown-menu">
+                             <div class="dropdown-content-body">
+                                 <ul>
+                                     <li><a href="{% url 'managers:logout' %}"><i class="icon-key"></i> <span>Logout</span></a></li>
+                                 </ul>
+                             </div>
+                         </div>
+                     </li>
+                 </ul>
+             </div>
+         </div>
+     </div>
+     <!--**********************************
+         Header end ti-comment-alt
+     ***********************************-->
+
+     <!--**********************************
+         Sidebar start
+     ***********************************-->
+     <div class="nk-sidebar">           
+         <div class="nk-nav-scroll mt-2">
+             <ul class="metismenu" id="menu">
+                 <li>
+                     <a href="{% url 'managers:index' %}" aria-expanded="false">
+                         <i class="fa-solid fa-house mb-1 mr-2"></i><span class="nav-text">Dashboard</span>
+                     </a>
+                 </li>
+                 <li>
+                     <a href="{% url 'managers:orders' %}" aria-expanded="false">
+                         <i class="fa-solid fa-square-poll-vertical mb-1 mr-2"></i><span class="nav-text">Orders</span>
+                     </a>
+                 </li>
+                 <div style="margin: 10px 14px; border-bottom: 1px solid #c8c8c8;"></div>
+
+                 <li class="mega-menu mega-menu-sm">
+                     <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                         <i class="fa-solid fa-utensils mb-1 mr-2"></i><span class="nav-text">Products</span>
+                     </a>
+                     <ul aria-expanded="false">
+                        <li><a href="{% url 'managers:categories' %}">Catgeories</a></li>
+                        <li><a href="{% url 'managers:products' %}">Items</a></li>
+                        <li><a href="{% url 'managers:brands' %}">Brands</a></li>
+                     </ul>
+                 </li>
+                 <li class="mega-menu mega-menu-sm">
+                     <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                         <i class="fa-solid fa-user-group mb-1 mr-2"></i><span class="nav-text">Users</span>
+                     </a>
+                     <ul aria-expanded="false">
+                         <li><a href="{% url 'managers:customers' %}">Customers</a></li>
+                     </ul>
+                 </li>
+
+                 <li class="mega-menu mega-menu-sm">
+                     <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                         <i class="fa-solid fa-tags mb-1 mr-2"></i><span class="nav-text">Promotions</span>
+                     </a>
+                     <ul aria-expanded="false">
+                        <li><a href="{% url 'managers:sliders' %}">Sliders</a></li>
+                        <!-- <li><a href="#">Offers</a></li>
+                        <li><a href="#">Notifications</a></li> -->
+                    </ul>
+                 </li>
+                 <li class="mega-menu mega-menu-sm">
+                     <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                         <i class="fa-solid fa-money-bill-trend-up mb-1 mr-2"></i><span class="nav-text">Transactions</span>
+                     </a>
+                     <ul aria-expanded="false">
+                         <li><a href="{% url 'managers:reports' %}">Reports</a></li>
+                     </ul>
+                 </li>
+                 <div style="margin: 10px 14px; border-bottom: 1px solid #c8c8c8;"></div>
+                 <li>
+                     <a href="{% url 'managers:settings' %}" aria-expanded="false">
+                         <i class="fa-solid fa-gear mb-1 mr-2"></i><span class="nav-text">Settings</span>
+                     </a>
+                 </li>
+
+             </ul>
+         </div>
+     </div>
+     <!--**********************************
+         Sidebar end
+     ***********************************-->

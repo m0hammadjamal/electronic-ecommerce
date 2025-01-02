@@ -388,10 +388,10 @@ document.addEventListener("DOMContentLoaded", function () {
             {% for review in product.reviews.all %}
             <ul class="flex bg-[#FAFAFA] py-[24px] rounded-[10px] mb-[24px]">
                 <li class="mr-[16px] pl-[16px] min-w-[56px]">
-                    <img src="{% static './web/images/default-user.png' %}" alt="user" class="w-[56px] h-[56px]">
+                    <img src="{% static './web/images/man.png' %}" alt="user" class="w-[56px] h-[56px]">
                 </li>
                 <li class="pr-[28px]">
-                    <h4 class="text-[17px] font-[600]">{{ review.user.username }}</h4>
+                    <h4 class="text-[17px] font-[600]">{{ review.user.first_name }} {{ review.user.last_name|default:"" }}</h4>
                     <div class="flex pb-[12px]">
                         <!-- Loop through filled stars -->
                         {% for _ in review.rating|range_filter %}

@@ -1,0 +1,125 @@
+{% extends "base/admin-base.html" %} {% block container %} {% load static %}
+
+
+{% include 'includes/admin-nav.html' %}
+
+
+        <!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+
+            <div id="overview-container" class="card">
+                <h1 class="card-title">Overview</h1>
+                <div class="row">
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card-body dash-item">
+                            <div class="icon-bg">
+                                <i class="fa-solid fa-chart-column"></i>
+                            </div>
+                            <div>
+                                <p>Orders</p>
+                                <h3>{{orders}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card-body dash-item">
+                            <div class="icon-bg">
+                                <i class="fa-solid fa-user-group"></i>
+                            </div>
+                            <div>
+                                <p>Customers</p>
+                                <h3>{{customers}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card-body dash-item">
+                            <div class="icon-bg">
+                                <i class="fa-solid fa-store"></i>
+                            </div>
+                            <div>
+                                <p>Items</p>
+                                <h3>{{items}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card-body dash-item">
+                            <div class="icon-bg">
+                                <i class="fa-solid fa-coins"></i>
+                            </div>
+                            <div>
+                                <p>Earnings</p>
+                                <h3>{{earnings}}</h3>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="container-fluid mt-3">
+
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <h1 class="card-title" style="padding-bottom: 16px;">Recent Orders</h1>
+                                <div class="active-member">
+                                    <div class="table-responsive">
+                                        <table class="table table-xs mb-0">
+                                            <thead>
+                                                <tr>
+                                                    <th>ID</th>
+                                                    <th>Customer</th>
+                                                    <th>Items</th>
+                                                    <th>Date</th>
+                                                    <th>Amount</th>
+                                                    <th>Status</th>
+                                                    <th>View</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for instance in instances %}
+                                                <tr>
+                                                    <td>{{instance.order_id}}</td>
+                                                    <td>{{instance.first_name}} {{instance.last_name}}</td>
+                                                    <td>
+                                                        {% for item in instance.items.all %}
+                                                        {{item.product.name}},
+                                                        {% endfor %}
+                                                    </td>
+                                                    <td>
+                                                        {{instance.created_datetime|date:"M. d Y - g:i A"}}
+                                                    </td>
+                                                    <td>
+                                                        QR {{instance.total}}
+                                                    </td>
+                                                    <td>{{instance.get_order_status_display}}</td>
+                                                    <td>
+                                                        <a href="{% url 'managers:order' id=instance.id %}" id="custom-btn">VIEW</a>
+                                                    </td>
+                                                    
+                                                </tr>
+                                                {% endfor %}
+                                                
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>                        
+                    </div>
+                </div>
+
+
+            </div>
+            <!-- #/ container -->
+        </div>
+        <!--**********************************
+            Content body end
+        ***********************************-->
+
+        {% endblock %}

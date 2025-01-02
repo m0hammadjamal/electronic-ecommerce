@@ -24,6 +24,7 @@ INSTALLED_APPS = [
     'items',
     'promos',
     'main',
+    'managers',
 ]
 
 MIDDLEWARE = [

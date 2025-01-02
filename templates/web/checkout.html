@@ -19,7 +19,94 @@
     background-color: #d9d9d98e; /* Set the color of the track */
     border-radius: 24px;
 }
+/* Submit Success Animation */
+#submit-animation {
+    position: fixed;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 50;
+    display: none; /* Hidden by default */
+}
+
+#submit-animation .text-center {
+    background-color: #22c55e;
+    border-radius: 16px;
+    padding: 20px;
+    width: 100%;
+    box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#submit-animation .success-icon {
+    background-color: #ffffff;
+    border-radius: 50%;
+    padding: 15px;
+    display: inline-block;
+}
+
+#submit-animation .success-icon svg {
+    width: 40px;
+    height: 40px;
+    color: #22c55e;
+    animation: draw 2s ease-in-out forwards;
+}
+
+@keyframes draw {
+    0% {
+        stroke-dasharray: 0, 100;
+        stroke-dashoffset: 0;
+    }
+    100% {
+        stroke-dasharray: 100, 0;
+        stroke-dashoffset: 0;
+    }
+}
+
+
+#submit-animation h2 {
+    color: #ffffff;
+    font-size: 18px;
+    font-weight: bold;
+    margin-top: 16px;
+}
+
+#submit-animation button {
+    margin-top: 16px;
+    padding: 8px 20px;
+    background-color: #ffffff;
+    color: #22c55e;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#submit-animation button:hover {
+    background-color: #f3f4f6;
+}
 </style>
+
+<!-- Submit Animation -->
+<div id="submit-animation">
+    <div class="text-center h-screen">
+        <div>
+            <div class="success-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h2>Order Successfully Placed!</h2>
+            <button onclick="window.location.href='/orders'">View Details</button>
+        </div>        
+    </div>
+</div>
 
 <section class="py-10 mt-[7px]">
     <section class="wrapper">
@@ -29,7 +116,7 @@
             </button>
             Checkout
         </p>
-        <form action="" method="post" enctype="multipart/form-data">
+        <form id="checkoutForm" action="{% url 'web:checkout' %}" method="post" enctype="multipart/form-data">
             {% csrf_token %}
             <div class="grid grid-cols-1 md:grid-cols-5 gap-10">
 
@@ -158,5 +245,39 @@ next.addEventListener("click", () => {
     slider.scrollBy({ left: slider.clientWidth, behavior: "smooth" });
 });
 </script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const checkoutForm = document.getElementById('checkoutForm');
+        const submitAnimation = document.getElementById('submit-animation');
+    
+        checkoutForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            submitAnimation.style.display = 'flex'; // Show success animation
+    
+            const formData = new FormData(checkoutForm);
+            const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+    
+            try {
+                const response = await fetch(checkoutForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: { 'X-CSRFToken': csrftoken },
+                });
+    
+                if (response.ok) {
+                    setTimeout(() => {
+                        submitAnimation.style.display = 'none'; // Hide animation
+                        window.location.href = '/'; // Redirect on success
+                    }, 3000); // Adjust delay if needed
+                } else {
+                    throw new Error('Submission failed');
+                }
+            } catch (error) {
+                alert('An error occurred. Please try again.');
+                submitAnimation.style.display = 'none'; // Hide animation
+            }
+        });
+    });
+    </script>
 
 {% endblock %}

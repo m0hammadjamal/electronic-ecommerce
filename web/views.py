@@ -664,6 +664,7 @@ def checkout(request):
     addresses = Address.objects.filter(customer=customer)
     cart_items = CartItem.objects.filter(customer=customer)
     cart_bill = CartTotal.objects.get(customer=customer)
+    order_completed = False
 
     if request.method == "POST":
         address_id = request.POST.get("address_id")
@@ -704,10 +705,12 @@ def checkout(request):
         
         # Clear cart after checkout
         cart_items.delete()
+        order_completed = True
 
         return redirect("web:index")  # Redirect to a success page
 
     return render(request, "web/checkout.html", {
+        "order_completed": order_completed,
         "addresses": addresses,
         "cart_items": cart_items,
         'subtotal': cart_bill.item_total or 0,
