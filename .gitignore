@@ -5,6 +5,13 @@
 __pycache__
 db.sqlite3
 tailwind.config.js
+js/
+plugins/
+static/js/
+static/plugins/
+static/icons/
+static/images/
+settings.py
 
 # Backup files # 
 *.bak 
