@@ -1,0 +1,254 @@
+#overview-container {
+    margin: 0 24px;
+    background: #fff;
+    border-radius: 16px;
+}
+
+#overview-container h1 {
+    padding: 24px;
+    padding-bottom: 0;
+}
+
+.dash-item {
+    display: flex;
+    justify-content: start;
+    align-items: center;
+}
+
+.dash-item .icon-bg{
+    padding: 14px;
+    border-radius: 12px;
+    background: #2E3F61;
+    margin-right: 24px;
+}
+
+.dash-item .icon-bg i {
+    font-size: 38px;
+    color: #fff;
+}
+
+.dash-item div p {
+    font-size: 16px;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 4px;
+}
+
+.dash-item div h3 {
+    font-size: 24px;
+    margin: 0;
+    padding: 0;
+}
+
+#custom-btn {
+    background: #2E3F61;
+    padding: 8px 16px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 12px;
+}
+
+#custom-btn:hover{
+    background: #0f1726;
+}
+
+#custom-red {
+    background: rgba(255, 0, 89, 0.947);
+    padding: 8px 16px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 12px;
+}
+
+#custom-red:hover{
+    background: rgba(164, 0, 57, 0.947);
+}
+
+#custom-green {
+    background: rgb(0, 137, 108);
+    padding: 8px 16px;
+    border-radius: 4px;
+    color: #fff;
+    font-size: 12px;
+}
+
+#custom-green:hover{
+    background: rgb(0, 103, 80);
+}
+
+.heading-line {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo-image {
+    width: 50px;
+}
+
+div.bill-details{
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    padding: 16px;
+    border-radius: 24px;
+}
+
+div.bill-details div.bill-head{
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 16px;
+    flex-wrap: wrap;
+}
+
+div.bill-details div.bill-head div.left{}
+
+div.bill-details div.bill-head div.left h1{
+    margin: 0 0 12px 0 !important;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+div.bill-details div.bill-head div.left p{
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+div.bill-details div.bill-head div.right{
+    
+}
+
+div.bill-details div.bill-head div.right img{
+    width: 50px;
+}
+
+div.bill-details div.bill-head div.right p{
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+    margin-bottom: 0;
+}
+
+div.bill-footer{
+    padding: 16px;
+}
+
+div.bill-footer div.bill-total{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+div.bill-footer div.bill-total p{
+    font-size: 14px;
+    font-weight: 500;
+    margin-bottom: 4px;
+}
+
+div.bill-footer div.bill-total:last-child p{
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: #000;
+}
+
+.cstm_header{
+    padding: 24px;
+    display: flex;
+    justify-self: start;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.normal_btn {
+    border: 1px solid #2E3F61;
+    padding: 12px 24px;
+    border-radius: 8px;
+    color: #2E3F61;
+    font-size: 16px;
+    margin-bottom: 8px;
+    margin-right: 8px;
+}
+
+.active_btn{
+    background: #2E3F61;
+    padding: 12px 24px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 16px;
+    margin-bottom: 8px;
+    margin-right: 8px;
+}
+
+.order_screen{
+    display: flex;
+    justify-content: start;
+    align-items: start;
+}
+
+.order_customer{
+    width: 35%;
+    margin-top: 24px;
+    padding: 16px;
+    border: 1px solid #e3e3e3;
+    margin-right: 14px;
+    border-radius: 16px;
+}
+
+.border-b{
+    border-bottom: 2px solid #e3e3e3;
+}
+
+.order_text{
+    font-size: 15px;
+    font-weight: 500;
+    margin: 16px 24px;
+}
+
+.menu-container {
+    position: relative;
+    display: inline-block;
+}
+
+.menu-icon:hover + .menu-drop,
+.menu-drop:hover {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.menu-drop {
+    display: none;
+    position: absolute;
+    z-index: 10000 !important;
+    background-color: #ffffff; /* Add your preferred background color */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1); /* Add a shadow effect */
+    outline: 1px solid #eeeeee;
+    border-radius: 8px;
+    width: 120px;
+    overflow: visible;
+}
+
+.menu-drop a {
+    width: 100%;
+    color: #333; /* Add your preferred text color */
+    text-decoration: none;
+    padding: 10px;
+    font-size: 12px;
+    border-bottom: 1px solid #eeeeee;
+}
+
+.menu-drop a:hover {
+    background-color: #f4f4f4; /* Add your preferred hover background color */
+}
+
+@media all and (max-width: 720px){
+    .order_screen{
+        flex-wrap: wrap;
+    }
+    .order_customer{
+        width: 100%;
+    }
+}

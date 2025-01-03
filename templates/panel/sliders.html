@@ -1,0 +1,67 @@
+{% extends "base/admin-base.html" %}
+{% block container %}
+{% load static %}
+
+{% include 'includes/admin-nav.html' %}
+
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="content-body">
+    <div class="row page-titles mx-0">
+        <div class="col p-md-0">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0)">{{ sub_title }}</a></li>
+                <li class="breadcrumb-item active"><a href="javascript:void(0)">{{ name }}</a></li>
+            </ol>
+        </div>
+    </div>
+    <!-- row -->
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="heading-line">
+                            <h4 class="card-title m-0 p-0">{{ name }}</h4>
+                            <a href="{% url 'add_slider' %}" class="btn btn-primary float-right">Add New Slider</a>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered zero-configuration">
+                                <thead>
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>TITLE</th>
+                                        <th>DESCRIPTION</th>
+                                        <th>IMAGE</th>
+                                        <th>CREATED AT</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for instance in instances %}
+                                    <tr>
+                                        <td>{{ instance.id }}</td>
+                                        <td>{{ instance.title }}</td>
+                                        <td>{{ instance.description }}</td>
+                                        <td>
+                                            <img src="{{ instance.image.url }}" alt="Slider Image" style="width: 80px; height: 40px;" />
+                                        </td>
+                                        <td>{{ instance.created_at }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- #/ container -->
+</div>
+<!--**********************************
+    Content body end
+***********************************-->
+
+{% endblock %}

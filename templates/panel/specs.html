@@ -1,0 +1,69 @@
+{% extends "base/admin-base.html" %}
+{% block container %}
+{% load static %}
+
+{% include 'includes/admin-nav.html' %}
+
+<!--**********************************
+    Content body start
+***********************************-->
+<div class="content-body">
+    <div class="row page-titles mx-0">
+        <div class="col p-md-0">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="javascript:void(0)">{{sub_title}}</a></li>
+                <li class="breadcrumb-item active"><a href="javascript:void(0)">{{name}}</a></li>
+            </ol>
+        </div>
+    </div>
+    <!-- row -->
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="heading-line">
+                            <h4 class="card-title m-0 p-0">{{name}}</h4>
+                            <div>
+                                <a href="{% url 'managers:specs_add' %}" id="custom-btn">ADD NEW</a>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-bordered zero-configuration" style="border-radius: 14px;">
+                                <thead>
+                                    <tr>
+                                        <th>NAME</th>
+                                        <th>DESCRIPTION</th>
+                                        <th>EDIT</th>
+                                        <th>DELETE</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for instance in instances %}
+                                    <tr>
+                                        <td>{{ instance.name }}</td>
+                                        <td>{{ instance.description }}</td>
+                                        <td>
+                                            <a href="{% url 'managers:specs_add' id=instance.id %}" id="custom-btn">EDIT</a>
+                                        </td>
+                                        <td>
+                                            <a href="{% url 'managers:specs_delete' id=instance.id %}" id="custom-red">DELETE</a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- #/ container -->
+</div>
+<!--**********************************
+    Content body end
+***********************************-->
+
+{% endblock %}

@@ -246,3 +246,62 @@ class ReviewForm(forms.ModelForm):
             "rating": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Rating"}),
             "review_text": forms.Textarea(attrs={"class": "form-control", "placeholder": "Review Text"}),
         }
+
+
+class UserForm(UserCreationForm):
+    class Meta:
+        model = User
+        fields = ["email", "phone_number", "is_manager", "is_customer"]
+        widgets = {
+            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Email"}),
+            "phone_number": forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone Number"}),
+            "is_manager": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "is_customer": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+        }
+
+
+class OTPVerifierForm(forms.ModelForm):
+    class Meta:
+        model = OTPVerifier
+        fields = ["user", "email", "otp"]
+        widgets = {
+            "user": forms.Select(attrs={"class": "form-control"}),
+            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Email"}),
+            "otp": forms.NumberInput(attrs={"class": "form-control", "placeholder": "OTP"}),
+        }
+
+class SliderForm(forms.ModelForm):
+    class Meta:
+        model = Slider
+        fields = ["name", "image", "url"]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Name"}),
+            "image": forms.FileInput(attrs={"class": "form-control"}),
+            "url": forms.TextInput(attrs={"class": "form-control", "placeholder": "URL"}),
+        }
+
+
+class OfferForm(forms.ModelForm):
+    class Meta:
+        model = Offer
+        fields = ["name", "image", "url"]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Name"}),
+            "image": forms.FileInput(attrs={"class": "form-control"}),
+            "url": forms.TextInput(attrs={"class": "form-control", "placeholder": "URL"}),
+        }
+
+
+class OffersForm(forms.ModelForm):
+    class Meta:
+        model = Offers
+        fields = ["name", "image1", "url1", "image2", "url2", "image3", "url3"]
+        widgets = {
+            "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Name"}),
+            "image1": forms.FileInput(attrs={"class": "form-control"}),
+            "url1": forms.TextInput(attrs={"class": "form-control", "placeholder": "URL1"}),
+            "image2": forms.FileInput(attrs={"class": "form-control"}),
+            "url2": forms.TextInput(attrs={"class": "form-control", "placeholder": "URL2"}),
+            "image3": forms.FileInput(attrs={"class": "form-control"}),
+            "url3": forms.TextInput(attrs={"class": "form-control", "placeholder": "URL3"}),
+        }
