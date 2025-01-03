@@ -1,2 +1,4 @@
 *.file_extension filter=lfs diff=lfs merge=lfs -text
 large_file_path filter=lfs diff=lfs merge=lfs -text
+/templates/ filter=lfs diff=lfs merge=lfs -text
+c:/Users/hp/Documents/tegfly/django/pro12/src/ecommerce/templates filter=lfs diff=lfs merge=lfs -text
