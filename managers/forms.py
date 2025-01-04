@@ -1,4 +1,5 @@
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 from promos.models import *
 from items.models import *
 from users.models import *
@@ -156,95 +157,153 @@ class CartItemForm(forms.ModelForm):
 class WhishlistForm(forms.ModelForm):
     class Meta:
         model = Whishlist
-        fields = ["customer", "product", "added_on"]
+        fields = ["customer", "product"]  # Exclude 'added_on'
         widgets = {
             "customer": forms.Select(attrs={"class": "form-control"}),
             "product": forms.Select(attrs={"class": "form-control"}),
-            "added_on": forms.DateTimeInput(attrs={"class": "form-control", "type": "datetime-local"}),
         }
 
 class ServiceForm(forms.ModelForm):
     class Meta:
         model = Service
-        fields = ["name", "description"]
+        fields = ["title", "description", "image"]  # Include 'image' as it's part of the model
         widgets = {
-            "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Service Name"}),
+            "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Service Title"}),
             "description": forms.Textarea(attrs={"class": "form-control", "placeholder": "Description"}),
+            "image": forms.ClearableFileInput(attrs={"class": "form-control"}),  # For image upload
         }
+
 
 class ServiceRequestForm(forms.ModelForm):
     class Meta:
         model = ServiceRequest
-        fields = ["service", "customer", "status", "requested_on"]
+        fields = ["name", "email", "phone", "service", "details"]  # Align with the model
         widgets = {
-            "service": forms.Select(attrs={"class": "form-control"}),
-            "customer": forms.Select(attrs={"class": "form-control"}),
-            "status": forms.TextInput(attrs={"class": "form-control", "placeholder": "Status"}),
-            "requested_on": forms.DateTimeInput(attrs={"class": "form-control", "type": "datetime-local"}),
+            "name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Your Name"}),
+            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Your Email"}),
+            "phone": forms.TextInput(attrs={"class": "form-control", "placeholder": "Your Phone Number"}),
+            "service": forms.Select(attrs={"class": "form-control"}),  # Dropdown for selecting service
+            "details": forms.Textarea(attrs={"class": "form-control", "placeholder": "Details about your request"}),
         }
+
 
 class CouponForm(forms.ModelForm):
     class Meta:
         model = Coupon
-        fields = ["code", "discount", "expiry_date"]
+        fields = [
+            "code",
+            "description",
+            "is_Percentage",
+            "discount_value",
+            "active",
+            "valid_from",
+            "valid_until",
+            "is_onece_peruser",
+        ]
         widgets = {
             "code": forms.TextInput(attrs={"class": "form-control", "placeholder": "Coupon Code"}),
-            "discount": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Discount"}),
-            "expiry_date": forms.DateTimeInput(attrs={"class": "form-control", "type": "datetime-local"}),
+            "description": forms.TextInput(attrs={"class": "form-control", "placeholder": "Description"}),
+            "is_Percentage": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "discount_value": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Discount Value"}),
+            "active": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "valid_from": forms.DateTimeInput(attrs={"class": "form-control", "type": "datetime-local"}),
+            "valid_until": forms.DateTimeInput(attrs={"class": "form-control", "type": "datetime-local"}),
+            "is_onece_peruser": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
+
 
 class AddressForm(forms.ModelForm):
     class Meta:
         model = Address
-        fields = ["customer", "street", "city", "state", "zip_code"]
+        fields = [
+            "customer",
+            "address1",
+            "address2",
+            "city",
+            "state",
+            "pincode",
+            "address_type",
+            "is_default",
+        ]
         widgets = {
             "customer": forms.Select(attrs={"class": "form-control"}),
-            "street": forms.TextInput(attrs={"class": "form-control", "placeholder": "Street Address"}),
+            "address1": forms.TextInput(attrs={"class": "form-control", "placeholder": "Address Line 1"}),
+            "address2": forms.TextInput(attrs={"class": "form-control", "placeholder": "Address Line 2"}),
             "city": forms.TextInput(attrs={"class": "form-control", "placeholder": "City"}),
             "state": forms.TextInput(attrs={"class": "form-control", "placeholder": "State"}),
-            "zip_code": forms.TextInput(attrs={"class": "form-control", "placeholder": "ZIP Code"}),
+            "pincode": forms.TextInput(attrs={"class": "form-control", "placeholder": "Pincode"}),
+            "address_type": forms.Select(attrs={"class": "form-control"}),
+            "is_default": forms.CheckboxInput(attrs={"class": "form-check-input"}),
         }
 
 class CartTotalForm(forms.ModelForm):
     class Meta:
         model = CartTotal
-        fields = ["cart", "total_price"]
+        fields = ["item_total", "total", "offer", "delivery", "customer"]
         widgets = {
-            "cart": forms.Select(attrs={"class": "form-control"}),
-            "total_price": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Total Price"}),
+            "item_total": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Item Total"}),
+            "total": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Total"}),
+            "offer": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Offer"}),
+            "delivery": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Delivery Charge"}),
+            "customer": forms.Select(attrs={"class": "form-control"}),
         }
 
 class OrderItemForm(forms.ModelForm):
     class Meta:
         model = OrderItem
-        fields = ["order", "product", "quantity", "price"]
+        fields = ["customer", "product", "quantity", "option", "amount"]
         widgets = {
-            "order": forms.Select(attrs={"class": "form-control"}),
+            "customer": forms.Select(attrs={"class": "form-control"}),
             "product": forms.Select(attrs={"class": "form-control"}),
             "quantity": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Quantity"}),
-            "price": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Price"}),
+            "option": forms.Select(attrs={"class": "form-control"}),
+            "amount": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Amount"}),
         }
 
 class OrderForm(forms.ModelForm):
     class Meta:
         model = Order
-        fields = ["customer", "order_date", "status", "total"]
+        fields = [
+            "customer",
+            "address",
+            "order_id",
+            "items",
+            "sub_total",
+            "delivery_charge",
+            "offer",
+            "total",
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+            "order_status",
+        ]
         widgets = {
             "customer": forms.Select(attrs={"class": "form-control"}),
-            "order_date": forms.DateTimeInput(attrs={"class": "form-control", "type": "datetime-local"}),
-            "status": forms.TextInput(attrs={"class": "form-control", "placeholder": "Status"}),
+            "address": forms.Select(attrs={"class": "form-control"}),
+            "order_id": forms.TextInput(attrs={"class": "form-control", "placeholder": "Order ID"}),
+            "items": forms.SelectMultiple(attrs={"class": "form-control"}),
+            "sub_total": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Sub Total"}),
+            "delivery_charge": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Delivery Charge"}),
+            "offer": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Offer"}),
             "total": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Total"}),
+            "first_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "First Name"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Last Name"}),
+            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Email"}),
+            "phone_number": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Phone Number"}),
+            "order_status": forms.Select(attrs={"class": "form-control"}),
         }
+
 
 class ReviewForm(forms.ModelForm):
     class Meta:
         model = Review
-        fields = ["product", "customer", "rating", "review_text"]
+        fields = ["product", "user", "rating", "comment"]
         widgets = {
             "product": forms.Select(attrs={"class": "form-control"}),
-            "customer": forms.Select(attrs={"class": "form-control"}),
-            "rating": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Rating"}),
-            "review_text": forms.Textarea(attrs={"class": "form-control", "placeholder": "Review Text"}),
+            "user": forms.Select(attrs={"class": "form-control"}),
+            "rating": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Rating (1-5)"}),
+            "comment": forms.Textarea(attrs={"class": "form-control", "placeholder": "Write your review here..."}),
         }
 
 

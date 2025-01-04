@@ -115,7 +115,7 @@
                     {% endif %}
                     {% if selected_color_id %}
                         {% for color in unique_colors %}
-                            {% if color.id == selected_color_id %}
+                            {% if color.id|stringformat:"s" == selected_color_id|stringformat:"s" %}
                                 ,{{ color.name }}
                             {% endif %}
                         {% endfor %}
@@ -385,6 +385,7 @@ document.addEventListener("DOMContentLoaded", function () {
             <h1 class="text-[24px] font-[500] leading-[32px] mb-[48px]">
                 Reviews
             </h1>
+            <a href="{% url 'web:add_review' id=product.id %}">review</a>
             {% for review in product.reviews.all %}
             <ul class="flex bg-[#FAFAFA] py-[24px] rounded-[10px] mb-[24px]">
                 <li class="mr-[16px] pl-[16px] min-w-[56px]">

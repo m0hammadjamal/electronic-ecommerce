@@ -24,6 +24,7 @@ from django.shortcuts import get_object_or_404
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
 from django.contrib.auth import logout
 from django.contrib.auth.decorators import login_required
+from main.decorators import allow_customer
 from django.views.decorators.csrf import csrf_exempt
 from django.http.response import HttpResponseRedirect,HttpResponse
 from django.core.mail import send_mail
@@ -77,6 +78,8 @@ def index(request):
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
+@login_required(login_url='/login/')
+@allow_customer
 def cart(request):
     customer = get_object_or_404(Customer, user=request.user)
     cart_items = CartItem.objects.filter(customer=customer)
@@ -197,7 +200,8 @@ def cart(request):
 #     return HttpResponseRedirect(reverse("web:cart"))
 
 
-
+@login_required(login_url='/login/')
+@allow_customer
 def add_to_cart(request):
     if request.method == "POST":
         user = request.user
@@ -265,7 +269,8 @@ def add_to_cart(request):
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
-
+@login_required(login_url='/login/')
+@allow_customer
 def cart_plus(request, id):
     user = request.user
     customer = Customer.objects.get(user=user)
@@ -279,6 +284,8 @@ def cart_plus(request, id):
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
+@login_required(login_url='/login/')
+@allow_customer
 def cart_minus(request, id):
     
     user = request.user
@@ -572,6 +579,7 @@ def resend_otp(request, email):
     
 # --------------------------------------------------------------------------------------------------------------------------------
 
+@login_required(login_url='/login/')
 def user_logout(request):
     logout(request)
     return redirect('web:index') 
@@ -658,7 +666,8 @@ def user_logout(request):
 #     }
 #     return render(request, 'web/checkout.html', context)
 
-
+@login_required(login_url='/login/')
+@allow_customer
 def checkout(request):
     customer = Customer.objects.get(user=request.user)
     addresses = Address.objects.filter(customer=customer)
@@ -672,7 +681,7 @@ def checkout(request):
         last_name = request.POST.get('last_name')
         email = request.POST.get('email')
         phone_number = request.POST.get('phone_number')
-        
+
         # Get the selected address
         address = Address.objects.get(id=address_id, customer=customer)
 
@@ -683,7 +692,7 @@ def checkout(request):
             order_id=f"ORD{Order.objects.count() + 1}",
             sub_total=cart_bill.item_total,
             total=cart_bill.total,
-            offer=cart_bill.offer,            
+            offer=cart_bill.offer,
             delivery_charge=cart_bill.delivery,
             first_name=first_name,
             last_name=last_name,
@@ -691,7 +700,7 @@ def checkout(request):
             phone_number=phone_number,
             order_status="IN",
         )
-        
+
         # Add cart items to order and link them
         for item in cart_items:
             order_item = OrderItem.objects.create(
@@ -702,7 +711,41 @@ def checkout(request):
                 option=item.option,
             )
             order.items.add(order_item)  # Link the OrderItem to the Order
-        
+
+            # Deduct stock based on product or option
+            if item.option:  # If the item has an option
+                option = item.option
+                if option.stock >= item.quantity:
+                    option.stock -= item.quantity
+                    option.save()
+                else:
+                    # Handle insufficient stock for the option
+                    return render(request, "web/checkout.html", {
+                        "error": f"Insufficient stock for {option.name}",
+                        "addresses": addresses,
+                        "cart_items": cart_items,
+                        'subtotal': cart_bill.item_total or 0,
+                        'discount': cart_bill.offer or 0,
+                        'delivery': cart_bill.delivery if cart_bill else 0,
+                        'total': cart_bill.total if cart_bill else 0,
+                    })
+            else:  # If the item is a product without options
+                product = item.product
+                if product.stock >= item.quantity:
+                    product.stock -= item.quantity
+                    product.save()
+                else:
+                    # Handle insufficient stock for the product
+                    return render(request, "web/checkout.html", {
+                        "error": f"Insufficient stock for {product.name}",
+                        "addresses": addresses,
+                        "cart_items": cart_items,
+                        'subtotal': cart_bill.item_total or 0,
+                        'discount': cart_bill.offer or 0,
+                        'delivery': cart_bill.delivery if cart_bill else 0,
+                        'total': cart_bill.total if cart_bill else 0,
+                    })
+
         # Clear cart after checkout
         cart_items.delete()
         order_completed = True
@@ -764,6 +807,8 @@ def brand(request, id):
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
+@login_required(login_url='/login/')
+@allow_customer
 def order(request, id):
     customer = get_object_or_404(Customer, user=request.user)
     try:
@@ -780,6 +825,8 @@ def order(request, id):
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
+@login_required(login_url='/login/')
+@allow_customer
 def orders(request):
     customer = Customer.objects.get(user=request.user)
     orders = Order.objects.prefetch_related('items__product').select_related('customer', 'address').all()
@@ -799,9 +846,12 @@ def orders(request):
 # --------------------------------------------------------------------------------------------------------------------------------
 
 def product(request, id):
+    # Fetch product and customer
     product = get_object_or_404(Product, id=id)
     user = request.user
     customer = get_object_or_404(Customer, user=user)
+
+    # Fetch related data
     specs = Spec.objects.filter(product=product).select_related('image')
     is_in_cart = CartItem.objects.filter(customer=customer, product=product).exists()
     related_products = Product.objects.filter(
@@ -809,20 +859,29 @@ def product(request, id):
     )[:10]
     reviews = product.reviews.all()
 
-
+    # Fetch product options and specifications
     options = Option.objects.filter(product=product).select_related("color")
     specifications = product.specifications.all()
 
-    # Retrieve selected options
+    # Retrieve selected options from request
     selected_color_id = request.GET.get("color_id")
     selected_storage_value = request.GET.get("storage_value")
     selected_ram_value = request.GET.get("ram_value")
 
-    # Defaults
+    # Default to the first available option if values are missing
     first_option = options.first() if options.exists() else None
-    selected_color_id = selected_color_id or (first_option.color.id if first_option and first_option.color else None)
     selected_storage_value = selected_storage_value or (first_option.storage if first_option else None)
     selected_ram_value = selected_ram_value or (first_option.ram if first_option else None)
+
+    # Automatically adjust the color_id based on availability
+    available_colors = {
+        option.color.id for option in options
+        if option.storage == selected_storage_value and option.ram == selected_ram_value
+    }
+
+    if not selected_color_id or int(selected_color_id) not in available_colors:
+        # Set to the first available color if current color_id is invalid
+        selected_color_id = next(iter(available_colors), None)
 
     # Find matching option
     matching_option = options.filter(
@@ -841,26 +900,28 @@ def product(request, id):
         for storage, rams in grouped_options.items()
     }
 
-    # Filtered Colors
-    filtered_colors = set()
-    if selected_storage_value and selected_ram_value:
-        filtered_colors = {
-            option.color for option in options
-            if option.storage == selected_storage_value and option.ram == selected_ram_value
-        }
+    # Filter available colors for the selected storage and RAM
+    filtered_colors = {
+        option.color for option in options
+        if option.storage == selected_storage_value and option.ram == selected_ram_value
+    }
 
+    # Get unique values for storage and RAM
     unique_colors = list(filtered_colors)
     unique_storages = {option.storage for option in options}
     unique_rams = {option.ram for option in options}
 
+    # RAM options for the selected storage
     ram_options_for_selected_storage = grouped_options.get(selected_storage_value, {})
 
     # Images and Price
     selected_images = matching_option.images.all() if matching_option else []
     selected_price = matching_option.sale_price if matching_option else product.sale_price
 
+    # Wishlist items
     wishlist_items = Whishlist.objects.filter(customer=customer).values_list('product', flat=True)
 
+    # Handle AJAX requests for dynamic updates
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         response_data = {
             "main_image_url": selected_images[0].image.url if selected_images else "",
@@ -876,14 +937,14 @@ def product(request, id):
         }
         return JsonResponse(response_data)
 
-
-
-
+    # Cart count
     cart_count = 0
     if request.user.is_authenticated:
         customer = Customer.objects.filter(user=request.user).first()
         if customer:
             cart_count = CartItem.objects.filter(customer=customer).aggregate(total=Sum('quantity'))['total'] or 0
+
+    # Context for rendering the template
     context = {
         "reviews": reviews,
         "related_products": related_products,
@@ -909,14 +970,26 @@ def product(request, id):
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
-def add_review(request, product_id):
-    product = get_object_or_404(Product, id=product_id)
+@login_required(login_url='/login/')
+@allow_customer
+def add_review(request, id):
+    product = get_object_or_404(Product, id=id)
 
     # Check if the user has purchased the product
-    has_ordered = Order.objects.filter(user=request.user, product=product).exists()
+    if not hasattr(request.user, 'customer'):
+        messages.error(request, "You need a customer account to review products.")
+        return redirect('web:product', id=product.id)
+
+    customer = request.user.customer
+
+    has_ordered = Order.objects.filter(
+        customer=customer,
+        items__product=product
+    ).exists()
+
     if not has_ordered:
         messages.error(request, "You can only review products you have purchased.")
-        return redirect('product_detail', product_id=product.id)
+        return redirect('web:product', id=product.id)
 
     if request.method == 'POST':
         rating = int(request.POST['rating'])
@@ -926,16 +999,18 @@ def add_review(request, product_id):
         existing_review = Review.objects.filter(product=product, user=request.user).exists()
         if existing_review:
             messages.error(request, "You have already reviewed this product.")
-            return redirect('product_detail', product_id=product.id)
+            return redirect('web:product', id=product.id)
 
         Review.objects.create(product=product, user=request.user, rating=rating, comment=comment)
         messages.success(request, "Review added successfully!")
-        return redirect('product_detail', product_id=product.id)
+        return redirect('web:product', id=product.id)
 
     return render(request, 'web/add_review.html', {'product': product})
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
+@login_required(login_url='/login/')
+@allow_customer
 def whishlist(request):
     customer = Customer.objects.get(user=request.user)
     wishlist_items = Whishlist.objects.filter(customer=customer)
@@ -948,6 +1023,8 @@ def whishlist(request):
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
+@login_required(login_url='/login/')
+@allow_customer
 def add_to_wishlist(request, id):
     customer = get_object_or_404(Customer, user=request.user)
     product = get_object_or_404(Product, id=id)
@@ -962,6 +1039,8 @@ def add_to_wishlist(request, id):
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
+@login_required(login_url='/login/')
+@allow_customer
 def remove_from_wishlist(request, id):
     """Remove a product from the wishlist."""
     customer = get_object_or_404(Customer, user=request.user)
@@ -1097,6 +1176,8 @@ def request_service(request):
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
+@login_required(login_url='/login/')
+@allow_customer
 def add_address(request):
     if request.method == "POST":
         customer = Customer.objects.get(user=request.user)
@@ -1118,6 +1199,8 @@ def add_address(request):
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
+@login_required(login_url='/login/')
+@allow_customer
 def edit_address(request, id):
     address = get_object_or_404(Address, id=id, customer__user=request.user)
     if request.method == "POST":
@@ -1138,6 +1221,8 @@ def edit_address(request, id):
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
+@login_required(login_url='/login/')
+@allow_customer
 def manage_addresses(request):
     customer = Customer.objects.get(user=request.user)
     addresses = Address.objects.filter(customer=customer)
@@ -1145,6 +1230,8 @@ def manage_addresses(request):
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
+@login_required(login_url='/login/')
+@allow_customer
 def account(request):
     recent_orders = Order.objects.all()[:3]
     cart_count = 0
@@ -1160,6 +1247,8 @@ def account(request):
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
+@login_required(login_url='/login/')
+@allow_customer
 def delete_address(request, id):
     address = get_object_or_404(Address, id=id, customer__user=request.user)
     address.delete()
