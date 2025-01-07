@@ -156,11 +156,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 <!-- Product -->   
                 {% for i in insatnces %}             
                 <div class="min-w-[150px] md:min-w-[200px] max-w-[150px] md:max-w-[200px] shadow-lg rounded-xl relative">
-                    <!-- <div class="absolute right-2 top-5 p-2 rounded-full bg-gray-200">
-                        <a href="#">
-                            <img src="{% static './web/images/like.png' %}" alt="image" class="w-[14px]">
-                        </a>
-                    </div> -->
                     <a href="{% url 'web:product' id=i.id %}" class="">
                         <img src="{{i.mainimage.url}}" alt="image" class="w-full rounded-lg">
                     </a>

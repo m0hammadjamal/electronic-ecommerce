@@ -124,7 +124,7 @@ class Option(CommonModel):
 
 class ProductImage(CommonModel):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="images")
-    variant = models.ForeignKey(Option, on_delete=models.SET_NULL, null=True, blank=True, related_name="images")
+    variant = models.ManyToManyField(Option, blank=True, null=True, related_name="images")
     image = models.ImageField(upload_to='product_images')
     alt_text = models.CharField(max_length=255, blank=True, null=True)
 

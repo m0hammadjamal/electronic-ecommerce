@@ -165,14 +165,7 @@
                                     <a href="{% url 'web:edit_address' id=address.id %}?next={{ request.path }}" class="text-blue-600 hover:text-blue-800 flex items-center space-x-1">
                                         <i class="bx bx-edit text-lg"></i>
                                         <span class="text-sm">Edit</span>
-                                    </a>
-                                    <form action="{% url 'web:delete_address' id=address.id %}?next={{ request.path }}" method="post" class="inline-block">
-                                        {% csrf_token %}
-                                        <button type="submit" class="text-red-600 hover:text-red-800 flex items-center space-x-1">
-                                            <i class="bx bx-trash text-lg"></i>
-                                            <span class="text-sm">Delete</span>
-                                        </button>
-                                    </form>
+                                    </a>                                    
                                 </div>
                                 <div>
                                     <input type="radio" name="address_id" value="{{ address.id }}" class="h-5 w-5 accent-[#A41E11]" required>

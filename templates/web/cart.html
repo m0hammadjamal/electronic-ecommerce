@@ -15,8 +15,12 @@
                 <div class="rounded-2xl p-5 border border-[#A41E11] mb-4">
                     <div class="flex justify-between items-start">
                         <div class="w-[20%]">
-                            <img src="{{ item.product.mainimage.url }}" alt="{{ item.product.name }}" class="w-full rounded-xl">
-                        </div>
+                            {% if item.image %}
+                                <img src="{{ item.images.0.url }}" alt="{{ item.product.name }}" class="w-full rounded-xl">
+                            {% else %}
+                                <img src="{{ item.product.mainimage.url }}" alt="{{ item.product.name }}" class="w-full rounded-xl">
+                            {% endif %}
+                        </div>                        
                         <div class="w-[77%]">
                             <p class="text-[12px] sm:text-[16px] md:text-[18px] font-semibold mb-1 sm:mb-2 md:mb-4">{{ item.product.name }}</p>
                             

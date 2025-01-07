@@ -9,6 +9,7 @@ from django.utils import timezone
 from django.utils.timezone import now
 from decimal import Decimal
 from django.db.models import Sum
+from django.db.models import Avg, Count
 from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
@@ -44,25 +45,62 @@ def index(request):
     brands = Brand.objects.all()
     offer = Offer.objects.all()
     insatnces = Product.objects.all()[:10]
+    cart_items = None
+    cart_products = None
 
-    # Use a different name for the annotation
+    # Annotate products for best-selling products
     best_selling_products = (
         Product.objects.annotate(sales_count_annotation=Sum('orderitem__quantity'))
         .order_by('-sales_count_annotation')[:10]
     )
 
     try:
-        # Assuming you want to get the latest offer
+        # Get the latest offer
         offers = Offers.objects.latest('id')
     except Offers.DoesNotExist:
         offers = None  # Handle the case when no offers exist
 
+    # Cart count for authenticated users
     cart_count = 0
     if request.user.is_authenticated:
         customer = Customer.objects.filter(user=request.user).first()
         if customer:
             cart_count = CartItem.objects.filter(customer=customer).aggregate(total=Sum('quantity'))['total'] or 0
 
+    # Handle search query
+    query = request.GET.get('q')
+
+    # Handle AJAX search suggestions
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+        if query and len(query) > 0:
+            suggestions = Product.objects.filter(
+                Q(name__icontains=query) | 
+                Q(brand__name__icontains=query) | 
+                Q(category__name__icontains=query)
+            ).values_list('name', flat=True)[:10]
+            return JsonResponse({'suggestions': list(suggestions)})
+        return JsonResponse({'suggestions': []})
+
+    # Handle regular search functionality
+    if query:
+        search_results = Product.objects.filter(
+            Q(name__icontains=query) | 
+            Q(brand__name__icontains=query) | 
+            Q(category__name__icontains=query)
+        )
+        context = {
+            "title": "",
+            "categories": category,
+            "instances": search_results,
+            "sliders": slider,
+            "cart_items": cart_items,
+            "cart_products": cart_products,
+            "cart_count": cart_count,
+        }
+        return render(request, "web/search.html", context=context)
+
+
+    # Default context for index page
     context = {
         "slider": slider,
         "category": category,
@@ -829,19 +867,19 @@ def order(request, id):
 @allow_customer
 def orders(request):
     customer = Customer.objects.get(user=request.user)
-    orders = Order.objects.prefetch_related('items__product').select_related('customer', 'address').all()
+    orders = Order.objects.filter(customer=customer).prefetch_related('items__product').select_related('customer', 'address')
     
     cart_count = 0
     if request.user.is_authenticated:
         customer = Customer.objects.filter(user=request.user).first()
         if customer:
             cart_count = CartItem.objects.filter(customer=customer).aggregate(total=Sum('quantity'))['total'] or 0
+
     context = {
         "cart_count": cart_count,
         'orders': orders,
     }
     return render(request, 'web/orders.html', context=context)
-
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
@@ -849,15 +887,34 @@ def product(request, id):
     # Fetch product and customer
     product = get_object_or_404(Product, id=id)
     user = request.user
-    customer = get_object_or_404(Customer, user=user)
+    color_id = request.GET.get("color_id")
+    customer = None
+
+    if request.user.is_authenticated:
+        customer = get_object_or_404(Customer, user=user)
+    else:
+        customer = None
 
     # Fetch related data
     specs = Spec.objects.filter(product=product).select_related('image')
-    is_in_cart = CartItem.objects.filter(customer=customer, product=product).exists()
+    is_in_cart = CartItem.objects.filter(customer=customer, product=product).exists() if customer else False
     related_products = Product.objects.filter(
         Q(category=product.category) & ~Q(id=product.id)
     )[:10]
-    reviews = product.reviews.all()
+
+    reviews = Review.objects.filter(product=product)
+    avg_rating = reviews.aggregate(Avg('rating'))['rating__avg'] or 0
+    review_count = reviews.aggregate(Count('id'))['id__count'] or 0
+
+    # Calculate full, half, and blank stars
+    full_stars = int(avg_rating)
+    half_star = 1 if avg_rating - full_stars >= 0.5 else 0
+    blank_stars = 5 - (full_stars + half_star)
+
+    # Create lists of stars to pass to the template
+    full_stars_list = [1] * full_stars
+    half_star_list = [1] * half_star
+    blank_stars_list = [1] * blank_stars
 
     # Fetch product options and specifications
     options = Option.objects.filter(product=product).select_related("color")
@@ -915,11 +972,22 @@ def product(request, id):
     ram_options_for_selected_storage = grouped_options.get(selected_storage_value, {})
 
     # Images and Price
-    selected_images = matching_option.images.all() if matching_option else []
+    selected_images = ProductImage.objects.filter(
+    product=product,
+    variant=matching_option
+    ).distinct() if matching_option else ProductImage.objects.filter(product=product)
     selected_price = matching_option.sale_price if matching_option else product.sale_price
+    regular_pricee = matching_option.regular_price if matching_option else product.regular_price
 
     # Wishlist items
     wishlist_items = Whishlist.objects.filter(customer=customer).values_list('product', flat=True)
+
+    selected_color = None
+    if color_id:
+        try:
+            selected_color = Color.objects.get(id=color_id)
+        except Color.DoesNotExist:
+            selected_color = None
 
     # Handle AJAX requests for dynamic updates
     if request.headers.get('x-requested-with') == 'XMLHttpRequest':
@@ -931,11 +999,15 @@ def product(request, id):
             ],
             "product_name": product.name,
             "price": selected_price,
+            "regular_price": regular_pricee,
             "selected_color_id": selected_color_id,
             "selected_storage_value": selected_storage_value,
             "selected_ram_value": selected_ram_value,
+            "selected_color_name": selected_color.name if selected_color else None, 
         }
         return JsonResponse(response_data)
+
+
 
     # Cart count
     cart_count = 0
@@ -947,6 +1019,11 @@ def product(request, id):
     # Context for rendering the template
     context = {
         "reviews": reviews,
+        "avg_rating": round(avg_rating, 1),
+        "review_count": review_count,
+        "full_stars_list": full_stars_list,
+        "half_star_list": half_star_list,
+        "blank_stars_list": blank_stars_list,
         "related_products": related_products,
         "cart_count": cart_count,
         "specs": specs,
@@ -960,6 +1037,7 @@ def product(request, id):
         "unique_rams": list(unique_rams),
         "selected_images": selected_images,
         "selected_price": selected_price,
+        "regular_pricee" : regular_pricee,
         "selected_color_id": selected_color_id,
         "selected_storage_value": selected_storage_value,
         "selected_ram_value": selected_ram_value,
@@ -975,12 +1053,14 @@ def product(request, id):
 def add_review(request, id):
     product = get_object_or_404(Product, id=id)
 
-    # Check if the user has purchased the product
-    if not hasattr(request.user, 'customer'):
+    # Check if the user has a customer account
+    customer = None
+    if request.user.is_authenticated:
+        customer, _ = Customer.objects.get_or_create(user=request.user)
+    
+    if not customer:
         messages.error(request, "You need a customer account to review products.")
         return redirect('web:product', id=product.id)
-
-    customer = request.user.customer
 
     has_ordered = Order.objects.filter(
         customer=customer,
@@ -996,8 +1076,7 @@ def add_review(request, id):
         comment = request.POST['comment']
 
         # Ensure the user hasn't already reviewed the product
-        existing_review = Review.objects.filter(product=product, user=request.user).exists()
-        if existing_review:
+        if Review.objects.filter(product=product, user=request.user).exists():
             messages.error(request, "You have already reviewed this product.")
             return redirect('web:product', id=product.id)
 
@@ -1191,8 +1270,16 @@ def add_address(request):
             address_type=request.POST["address_type"],
         )
         # Redirect based on the 'next' query parameter
-        next_page = request.GET.get("next", "web:manage_addresses")
-        return redirect(next_page)
+        referer = request.META.get('HTTP_REFERER', '')
+        if 'checkout' in referer:
+            # Redirect to checkout page if coming from there
+            return redirect('web:checkout')
+        elif 'manage_addresses' in referer:
+            # Redirect back to the manage addresses page
+            return redirect('web:manage_addresses')
+        else:
+            # Default to some fallback page if no relevant referer
+            return redirect(request.GET.get("next", 'web:manage_addresses'))
     
     return render(request, "web/add_address.html")
 
@@ -1212,8 +1299,16 @@ def edit_address(request, id):
         address.address_type = request.POST["address_type"]
         address.save()
         # Redirect based on the 'next' query parameter
-        next_page = request.GET.get("next", "web:manage_addresses")
-        return redirect(next_page)
+        referer = request.META.get('HTTP_REFERER', '')
+        if 'checkout' in referer:
+            # Redirect to checkout page if coming from there
+            return redirect('web:checkout')
+        elif 'manage_addresses' in referer:
+            # Redirect back to the manage addresses page
+            return redirect('web:manage_addresses')
+        else:
+            # Default to some fallback page if no relevant referer
+            return redirect(request.GET.get("next", 'web:manage_addresses'))
     
     return render(request, "web/add_address.html", {"address": address, "is_edit": True})
 
@@ -1253,8 +1348,17 @@ def delete_address(request, id):
     address = get_object_or_404(Address, id=id, customer__user=request.user)
     address.delete()
     # Redirect based on the 'next' query parameter
-    next_page = request.GET.get("next", "web:manage_addresses")
-    return redirect(next_page)
+            # Redirect based on the 'next' query parameter
+    referer = request.META.get('HTTP_REFERER', '')
+    if 'manage_addresses' in referer:
+        # Redirect to checkout page if coming from there
+        return redirect('web:manage_addresses')
+    elif 'manage_addresses' in referer:
+        # Redirect back to the manage addresses page
+        return redirect('web:manage_addresses')
+    else:
+        # Default to some fallback page if no relevant referer
+        return redirect(request.GET.get("next", 'web:manage_addresses'))
 
 
 # --------------------------------------------------------------------------------------------------------------------------------

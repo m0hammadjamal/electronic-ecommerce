@@ -1,0 +1,43 @@
+{% extends "base/base.html" %}
+{% block container %}
+{% load static %}
+
+{% if instances %}
+<section class="py-20">
+    <section class="wrapper">
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 md:gap-10">
+            {% for product in instances %}
+            <div class="min-w-[150px] md:min-w-[200px] max-w-[150px] md:max-w-[200px] shadow-lg rounded-xl relative">
+                <a href="{% url 'web:product' id=product.id %}" class="">
+                    <img src="{{ product.mainimage.url }}" alt="{{ product.name }}" class="w-full rounded-lg">
+                </a>
+                <h3 class="text-[15px] pl-4 font-normal my-2">
+                    <a href="{% url 'web:product' id=product.id %}">
+                        {{ product.name }}
+                    </a>
+                </h3>
+                {% if product.regular_price %}
+                <p class="text-[10px] pl-4 line-through text-gray-500 font-semibold mb-2">${{ product.regular_price }}</p>
+                {% endif %}
+                <p class="text-[14px] pl-4 font-semibold mb-2">${{ product.sale_price }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </section>
+</section>
+{% else %}
+<section class="wrapper h-[90vh] py-10">
+    <div class="h-full flex justify-center items-center">
+        <div class="text-center h-full mb-10">
+            <div class="flex justify-center items-center h-full">
+                <img src="{% static 'web/images/404.png' %}" alt="No results found" class="w-[90%] sm:w-[60%] md:w-[40%]">
+            </div>
+            <a href="{% url 'web:index' %}" class="py-4 px-8 bg-[#A41E11] rounded-full text-[14px] text-white font-semibold">
+                Continue Shopping
+            </a>
+        </div>
+    </div>
+</section>
+{% endif %}
+
+{% endblock %}

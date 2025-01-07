@@ -29,6 +29,6 @@
         <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Submit Review</button>
     </form>
 
-    <a href="{% url 'product_detail' product.id %}" class="block mt-4 text-blue-500">Back to Product</a>
+    <a href="{% url 'web:product' product.id %}" class="block mt-4 text-blue-500">Back to Product</a>
 </section>
 {% endblock %}

@@ -9,14 +9,17 @@
         </h1>
         
         
-        <form action="/" method="get" class="w-[30%] hidden md:block">
+        <form action="#" method="get" class="w-[30%] hidden md:block">
             <div class="flex justify-between items-center border hover:border-purple-500 rounded-full py-2 px-5">
-                <input type="text" name="q" class="outline-none w-full placeholder:text-[13px] font-thin" placeholder="What are you looking for?" required>
+                <input type="text" id="search-input"  name="q" class="outline-none w-full placeholder:text-[13px] font-thin" placeholder="What are you looking for?" value="{{ request.GET.q }}" required>
                 <button type="submit" class="w-[16px]">
                     <img src="{% static './web/images/search.png' %}" alt="image" class="w-[16px]">
                 </button>
             </div>
-        </form> 
+            <ul id="suggestions" class="absolute left-0 right-0 bg-white border rounded-md shadow-md mt-1 hidden z-50 text-center">
+                <!-- Suggestions dynamically added here -->
+            </ul>
+        </form>        
         <div class="">
             <ul class="flex justify-end items-center">   
                 <li class="mr-1 md:mr-7 hidden md:flex">                   
@@ -118,11 +121,68 @@
         </div>
     </section>
     <section class="wrapper pb-4 md:hidden">
-        <form action="" method="get" id="search-bar">
-            <div class="flex justify-between items-center border rounded-full py-2 px-5">
-                <input type="text" class="outline-none w-full placeholder:text-[13px] font-thin" name="q" placeholder="What are you looking for?">
-                <img src="{% static './web/images/search.png' %}" alt="image" class="w-[16px]">
-            </div>
-        </form>
+        <section class="wrapper md:hidden">
+            <form method="get" id="search-bar">
+                <div class="flex justify-between items-center border rounded-full py-2 px-5">
+                    <input type="text" id="search-input"  class="outline-none w-full placeholder:text-[13px] font-thin" name="q" placeholder="What are you looking for?" value="{{ request.GET.q }}">
+                    <button type="submit">
+                        <img src="{% static './web/images/search.png' %}" alt="image" class="w-[16px]">
+                    </button>
+                </div>
+                <ul id="suggestions" class="absolute left-0 right-0 bg-white border rounded-md shadow-md mt-1 hidden z-50">
+                    <!-- Suggestions dynamically added here -->
+                </ul>
+            </form>
+        </section>        
     </section>
 </header>
+
+
+
+<script>
+    const searchInput = document.getElementById('search-input');
+    const suggestionsList = document.getElementById('suggestions');
+
+    searchInput.addEventListener('input', async () => {
+        const query = searchInput.value.trim();
+
+        if (query.length > 0) {
+            try {
+                const response = await fetch(`/?q=${encodeURIComponent(query)}`, {
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                });
+                const data = await response.json();
+
+                if (data.suggestions.length > 0) {
+                    suggestionsList.innerHTML = data.suggestions
+                        .map(suggestion => `<li class="p-2 hover:bg-gray-100 cursor-pointer">${suggestion}</li>`)
+                        .join('');
+                    suggestionsList.classList.remove('hidden');
+                } else {
+                    suggestionsList.classList.add('hidden');
+                }
+            } catch (error) {
+                console.error("Error fetching suggestions:", error);
+            }
+        } else {
+            suggestionsList.classList.add('hidden');
+        }
+    });
+
+    // Hide suggestions when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!searchInput.contains(e.target) && !suggestionsList.contains(e.target)) {
+            suggestionsList.classList.add('hidden');
+        }
+    });
+
+    // Insert suggestion into input when clicked
+    suggestionsList.addEventListener('click', (e) => {
+        if (e.target.tagName === 'LI') {
+            searchInput.value = e.target.textContent;
+            suggestionsList.classList.add('hidden');
+        }
+    });
+</script>
