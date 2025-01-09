@@ -35,7 +35,6 @@
                                     <tr>
                                         <th>IMAGE</th>
                                         <th>NAME</th>
-                                        <th>DESCRIPTION</th>
                                         <th>EDIT</th>
                                         <th>DELETE</th>
                                     </tr>
@@ -45,9 +44,8 @@
                                     <tr>
                                         <td><img src="{{ instance.image.url }}" alt="{{ instance.name }}" width="50" height="50"></td>
                                         <td>{{ instance.name }}</td>
-                                        <td>{{ instance.description }}</td>
                                         <td>
-                                            <a href="{% url 'managers:icon_images_add' id=instance.id %}" id="custom-btn">EDIT</a>
+                                            <a href="{% url 'managers:icon_images_edit' id=instance.id %}" id="custom-btn">EDIT</a>
                                         </td>
                                         <td>
                                             <a href="{% url 'managers:icon_images_delete' id=instance.id %}" id="custom-red">DELETE</a>

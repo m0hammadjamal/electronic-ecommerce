@@ -51,62 +51,6 @@
 </section>
 
 
-<!-- footer -->
-
-
-
-<script>
-    // JavaScript to toggle the mobile menu
-    const searchBar = document.getElementById('search-bar');
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const profileMenuButton = document.getElementById('profile-menu-button');
-    const profileMenu = document.getElementById('profile-menu');
-
-    mobileMenuButton.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-        document.body.classList.toggle('overflow-hidden', !mobileMenu.classList.contains('hidden'));
-    });
-
-    // Hide mobile menu when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
-            mobileMenu.classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        }
-    });
-
-    // Toggle profile menu
-    profileMenuButton.addEventListener('click', (event) => {
-        event.stopPropagation(); // Prevent the event from propagating to the document
-        profileMenu.classList.toggle('hidden');
-    });
-
-    // Hide profile menu when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!profileMenu.contains(event.target) && !profileMenuButton.contains(event.target)) {
-            profileMenu.classList.add('hidden');
-        }
-    });
-
-    // Hide profile menu on scroll
-    window.addEventListener('scroll', () => {
-        profileMenu.classList.add('hidden');
-    });
-
-          // Hide search bar on scroll
-    let lastScrollY = window.scrollY;
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > lastScrollY) {
-            searchBar.classList.add('hidden');
-            mobileSearchBar.classList.add('hidden');
-        } else {
-            searchBar.classList.remove('hidden');
-            mobileSearchBar.classList.remove('hidden');
-        }
-        lastScrollY = window.scrollY;
-    });
-</script>
         <script src="https://unpkg.com/swiper/swiper-bundle.min.js"></script>
         <script src="./js/jquery-3.7.1.min.js"></script>
         <script src="./js/index.js"></script>

@@ -21,7 +21,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card" style="background-color: #b5c8eb;">
                     <div class="card-body">
                         <h4 class="card-title">{{name}}</h4>
                         <div class="basic-form">
@@ -29,13 +29,25 @@
                                 {% csrf_token %}
                                 <div class="form-row">
                                     <div class="form-group col-12 col-md-6">
+                                        <label>Product</label>
+                                        {{ form.product }}
+                                    </div>
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Variant</label>
+                                        {{ form.variant }}
+                                    </div>
+                                    <div class="form-group col-12 col-md-6">
                                         <label>Product Image</label>
                                         {{ form.image }}
                                     </div>
-                                    <button class="btn login-form__btn submit button" type="submit">Submit</button>
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Alt Text</label>
+                                        {{ form.alt_text }}
+                                    </div>
                                 </div>
+                                <button class="btn login-form__btn submit button" type="submit">Submit</button>
                                 {% if error %}
-                                    <p>{{ message }}</p>
+                                    <p class="text-danger">{{ error }}</p>
                                 {% endif %}
                             </form>
                         </div>

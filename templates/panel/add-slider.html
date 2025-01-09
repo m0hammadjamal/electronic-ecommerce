@@ -21,7 +21,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-lg-8">
-                <div class="card">
+                <div class="card" style="background-color: #b5c8eb;">
                     <div class="card-body">
                         <h4 class="card-title">Add Slider</h4>
                         <div class="basic-form">
@@ -29,7 +29,7 @@
                                 {% csrf_token %}
                                 {{ form.as_p }}
                                 <button type="submit" class="btn btn-primary">Save Slider</button>
-                                <a href="{% url 'slider_list' %}" class="btn btn-secondary">Cancel</a>
+                                <a href="{% url 'managers:sliders' %}" class="btn btn-secondary">Cancel</a>
                             </form>
                         </div>
                     </div>

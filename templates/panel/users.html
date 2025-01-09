@@ -26,7 +26,7 @@
                         <div class="heading-line">
                             <h4 class="card-title m-0 p-0">{{ name }}</h4>
                             <div>
-                                <a href="{% url 'managers:add_user' %}" id="custom-btn">ADD NEW</a>
+                                <a href="{% url 'managers:users_add' %}" id="custom-btn">ADD NEW</a>
                             </div>
                         </div>
                         <div class="table-responsive">
@@ -49,10 +49,10 @@
                                         <td>{{ instance.first_name }}</td>
                                         <td>{{ instance.last_name }}</td>
                                         <td>
-                                            <a href="{% url 'managers:add_user' instance.id %}" id="custom-btn">EDIT</a>
+                                            <a href="{% url 'managers:users_edit' instance.pk %}" id="custom-btn">EDIT</a>
                                         </td>
                                         <td>
-                                            <a href="{% url 'managers:delete_user' instance.id %}" id="custom-red">DELETE</a>
+                                            <a href="{% url 'managers:users_delete' instance.pk %}" id="custom-red">DELETE</a>
                                         </td>
                                     </tr>
                                     {% endfor %}

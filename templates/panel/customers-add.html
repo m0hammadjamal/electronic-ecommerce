@@ -21,7 +21,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card" style="background-color: #b5c8eb;">
                     <div class="card-body">
                         <h4 class="card-title">{{name}}</h4>
                         <div class="basic-form">
@@ -29,21 +29,13 @@
                                 {% csrf_token %}
                                 <div class="form-row">
                                     <div class="form-group col-12 col-md-6">
-                                        <label>Name</label>
-                                        {{ form.name }}
-                                    </div>
+                                        <label>Customer id</label>
+                                        {{ form.customer_id }}
+                                    </div>   
                                     <div class="form-group col-12 col-md-6">
-                                        <label>Email</label>
-                                        {{ form.email }}
-                                    </div>
-                                    <div class="form-group col-12 col-md-6">
-                                        <label>Phone</label>
-                                        {{ form.phone }}
-                                    </div>
-                                    <div class="form-group col-12 col-md-6">
-                                        <label>Address</label>
-                                        {{ form.address }}
-                                    </div>
+                                        <label>User</label>
+                                        {{ form.user }}
+                                    </div>                                     
                                     <button class="btn login-form__btn submit button" type="submit">Submit</button>
                                 </div>
                                 {% if message %}

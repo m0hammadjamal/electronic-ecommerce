@@ -25,7 +25,7 @@
                     <div class="card-body">
                         <div class="heading-line">
                             <h4 class="card-title m-0 p-0">{{ name }}</h4>
-                            <a href="{% url 'add_slider' %}" class="btn btn-primary float-right">Add New Slider</a>
+                            <a href="{% url 'managers:sliders_add' %}" class="btn btn-primary float-right">Add New Slider</a>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-bordered zero-configuration">
@@ -33,21 +33,31 @@
                                     <tr>
                                         <th>ID</th>
                                         <th>TITLE</th>
-                                        <th>DESCRIPTION</th>
-                                        <th>IMAGE</th>
-                                        <th>CREATED AT</th>
+                                        <th>URL</th>
+                                        <th>IMAGE</th>  
+                                        <th>EDIT</th>  
+                                        <th>DELETE</th>                                      
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for instance in instances %}
                                     <tr>
                                         <td>{{ instance.id }}</td>
-                                        <td>{{ instance.title }}</td>
-                                        <td>{{ instance.description }}</td>
+                                        <td>{{ instance.name }}</td>
+                                        <td style="max-width: 100px;">{{ instance.url }}</td>
                                         <td>
                                             <img src="{{ instance.image.url }}" alt="Slider Image" style="width: 80px; height: 40px;" />
+                                        </td>    
+                                        <td>
+                                            <a href="{% url 'managers:sliders_edit' instance.pk %}" id="custom-btn">EDIT</a>
                                         </td>
-                                        <td>{{ instance.created_at }}</td>
+                                        <td>
+                                            <a href="{% url 'managers:sliders_delete' instance.pk %}" id="custom-red">DELETE</a>
+                                        </td>                                    
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5">No sliders found.</td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

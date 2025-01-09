@@ -1,5 +1,5 @@
-{% extends "base/admin-base.html" %} 
-{% block container %} 
+{% extends "base/admin-base.html" %}
+{% block container %}
 {% load static %}
 
 {% include 'includes/admin-nav.html' %}
@@ -24,7 +24,7 @@
                 <div class="card">
                     <div class="card-body">
                         <div class="heading-line">
-                            <h4 class="card-title m-0 p-0">{{name}}</h4>
+                            <h4 class="card-title m-0 p-0">{{ name }}</h4>
                             <div>
                                 <a href="{% url 'managers:services_add' %}" id="custom-btn">ADD NEW</a>
                             </div>
@@ -34,6 +34,8 @@
                                 <thead>
                                     <tr>
                                         <th>SERVICE NAME</th>
+                                        <th>DESCRIPTION</th>
+                                        <th>IMAGE</th>
                                         <th>EDIT</th>
                                         <th>DELETE</th>
                                     </tr>
@@ -41,7 +43,15 @@
                                 <tbody>
                                     {% for instance in instances %}
                                     <tr>
-                                        <td>{{ instance.name }}</td>
+                                        <td>{{ instance.title }}</td>  <!-- Display service title -->
+                                        <td style="max-width: 150px;">{{ instance.description }}</td>  <!-- Display service description -->
+                                        <td>
+                                            {% if instance.image %}
+                                                <img src="{{ instance.image.url }}" alt="Image" style="width: 50px; height: 50px;">
+                                            {% else %}
+                                                No image available
+                                            {% endif %}
+                                        </td>  <!-- Display service image -->
                                         <td>
                                             <a href="{% url 'managers:services_edit' id=instance.id %}" id="custom-btn">EDIT</a>
                                         </td>

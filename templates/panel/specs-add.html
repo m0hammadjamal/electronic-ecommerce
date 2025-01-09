@@ -4,9 +4,7 @@
 
 {% include 'includes/admin-nav.html' %}
 
-<!--**********************************
-    Content body start
-***********************************-->
+<!-- Content body start -->
 <div class="content-body">
     <div class="row page-titles mx-0">
         <div class="col p-md-0">
@@ -16,30 +14,35 @@
             </ol>
         </div>
     </div>
-    <!-- row -->
-
+    
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card"  style="background-color: #b5c8eb;">
                     <div class="card-body">
-                        <h4 class="card-title">{{name}}</h4>
+                        <h4 class="card-title">{{ name }}</h4>  <!-- Page title -->
+                        <img src="{% static './images/admin-img1.png' %}" alt="" style="width: 50%;">                        
                         <div class="basic-form">
                             <form action="" method="post" enctype="multipart/form-data" class="ajax redirect">
                                 {% csrf_token %}
                                 <div class="form-row">
                                     <div class="form-group col-12 col-md-6">
-                                        <label>Name</label>
-                                        {{ form.name }}
+                                        <label for="id_product">Product</label>
+                                        {{ form.product }}  <!-- Product field from the SpecForm -->
                                     </div>
                                     <div class="form-group col-12 col-md-6">
-                                        <label>Description</label>
-                                        {{ form.description }}
+                                        <label for="id_image">Image</label>
+                                        {{ form.image }}  <!-- Image field -->
+                                    </div>
+                                    <div class="form-group col-12 col-md-6">
+                                        <label for="id_detail">Detail</label>
+                                        {{ form.detail }}  <!-- Detail field -->
                                     </div>
                                     <button class="btn login-form__btn submit button" type="submit">Submit</button>
                                 </div>
+
                                 {% if message %}
-                                    <p>{{ message }}</p>
+                                    <p>{{ message }}</p>  <!-- Display success or error message -->
                                 {% endif %}
                             </form>
                         </div>
@@ -48,10 +51,7 @@
             </div>
         </div>
     </div>
-    <!-- #/ container -->
 </div>
-<!--**********************************
-    Content body end
-***********************************-->
+<!-- Content body end -->
 
 {% endblock %}

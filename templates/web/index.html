@@ -156,18 +156,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 <!-- Product -->   
                 {% for i in insatnces %}             
                 <div class="min-w-[150px] md:min-w-[200px] max-w-[150px] md:max-w-[200px] shadow-lg rounded-xl relative">
-                    <a href="{% url 'web:product' id=i.id %}" class="">
-                        <img src="{{i.mainimage.url}}" alt="image" class="w-full rounded-lg">
+                    <a href="{% url 'web:product' id=i.id %}">
+                        <img src="{{ i.mainimage.url }}" alt="image" 
+                             class="w-full h-[250px] object-cover rounded-lg">
                     </a>
                     <h3 class="text-[15px] pl-4 font-normal my-2">
                         <a href="{% url 'web:product' id=i.id %}">
-                            {{i.name}}
+                            {{ i.name }}
                         </a>
                     </h3>
-                    <p class="text-[10px] pl-4 line-through text-gray-500 font-semibold mb-2">${{ i.regular_price }}</p>
-                    <p class="text-[14px] pl-4 font-semibold mb-2">${{ i.sale_price }}</p>
-                    <!-- <a href="#"></a> -->
+                    <p class="text-[10px] pl-4 line-through text-gray-500 font-semibold mb-2">
+                        ${{ i.regular_price }}
+                    </p>
+                    <p class="text-[14px] pl-4 font-semibold mb-2">
+                        ${{ i.sale_price }}
+                    </p>
                 </div>
+                
                 {% endfor %}
             </div>
             <!-- Right Slide Button -->
@@ -283,7 +288,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 {% for product in best_selling_products %}
                 <div class="min-w-[150px] md:min-w-[200px] max-w-[150px] md:max-w-[200px] shadow-lg rounded-xl relative">                    
                     <a href="{% url 'web:product' product.id %}">
-                        <img src="{{ product.mainimage.url }}" alt="{{ product.name }}" class="w-full rounded-lg">
+                        <img src="{{ product.mainimage.url }}" alt="{{ product.name }}" class="w-full h-[250px] object-cover rounded-lg">
                     </a>
                     <h3 class="text-[15px] pl-4 font-normal my-2">
                         <a href="{% url 'web:product' product.id %}">
@@ -356,45 +361,6 @@ document.addEventListener('DOMContentLoaded', function () {
 
 <script src="/js/index.js"></script>
 <script>
-    // JavaScript to toggle the mobile menu
-    const searchBar = document.getElementById('search-bar');
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const profileMenuButton = document.getElementById('profile-menu-button');
-    const profileMenu = document.getElementById('profile-menu');
-
-    mobileMenuButton.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-        document.body.classList.toggle('overflow-hidden', !mobileMenu.classList.contains('hidden'));
-    });
-
-    // Hide mobile menu when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
-            mobileMenu.classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        }
-    });
-
-    // Toggle profile menu
-    profileMenuButton.addEventListener('click', (event) => {
-        event.stopPropagation(); // Prevent the event from propagating to the document
-        profileMenu.classList.toggle('hidden');
-    });
-
-    // Hide profile menu when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!profileMenu.contains(event.target) && !profileMenuButton.contains(event.target)) {
-            profileMenu.classList.add('hidden');
-        }
-    });
-
-    // Hide profile menu on scroll
-    window.addEventListener('scroll', () => {
-        profileMenu.classList.add('hidden');
-    });
-
-
     const slider = document.getElementById('slider');
     const slideLeft = document.getElementById('slideLeft');
     const slideRight = document.getElementById('slideRight');
@@ -420,24 +386,6 @@ document.addEventListener('DOMContentLoaded', function () {
     slideRightone.addEventListener('click', () => {
     sliderone.scrollBy({ left: 200, behavior: 'smooth' });
     });
-
-
-
-    
-    // Hide search bar on scroll
-    let lastScrollY = window.scrollY;
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > lastScrollY) {
-            searchBar.classList.add('hidden');
-            mobileSearchBar.classList.add('hidden');
-        } else {
-            searchBar.classList.remove('hidden');
-            mobileSearchBar.classList.remove('hidden');
-        }
-        lastScrollY = window.scrollY;
-    });
-    
-
     
 </script>
 {% endblock %}

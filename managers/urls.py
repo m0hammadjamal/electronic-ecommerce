@@ -9,6 +9,17 @@ urlpatterns = [
     path("", views.index, name="index"),
     path('login/', views.login, name="login"),
     path('logout/', views.logout, name="logout"),
+    
+    path('order/<int:id>/', views.order, name="order"),
+    path('reports/', views.reports, name="reports"),
+    path('settings/', views.settings, name="settings"),
+    path('password/', views.password, name="password"),    
+    path('customer/orders/<int:id>/', views.customer_order, name="customer_order"),
+
+    path("order/accept/<int:id>/", views.order_accept, name="order_accept"),
+    path("order/reject/<int:id>/", views.order_reject, name="order_reject"),
+    path("order/dispatched/<int:id>/", views.order_dispatched, name="order_dispatched"),
+    path("order/completed/<int:id>/", views.order_completed, name="order_completed"),
 
     # Category
     path('categories/', views.categories, name='categories'),
@@ -105,6 +116,7 @@ urlpatterns = [
     path('service-requests/add/', views.service_requests_add, name='service_requests_add'),
     path('service-requests/edit/<int:id>/', views.service_requests_edit, name='service_requests_edit'),
     path('service-requests/delete/<int:id>/', views.service_requests_delete, name='service_requests_delete'),
+    path('request/<int:id>', views.request_service_detail_view, name='service_requests_details'),
 
     # Coupon
     path('coupons/', views.coupons, name='coupons'),
@@ -145,27 +157,27 @@ urlpatterns = [
     # User
     path('users/', views.user_list, name='user_list'),
     path('users/add/', views.user_add, name='users_add'),
-    path('users/edit/<int:id>/', views.user_edit, name='users_edit'),
-    path('users/delete/<int:id>/', views.user_delete, name='users_delete'),
+    path('users/edit/<int:pk>/', views.user_edit, name='users_edit'),
+    path('users/delete/<int:pk>/', views.user_delete, name='users_delete'),
 
     # OTP Verifier
     path('otp-verifiers/', views.otpverifier_list, name='otpverifier_list'),
 
     # Slider
-    path('sliders/', views.slider_list, name='sliders'),
+    path('sliders/', views.sliders, name='sliders'),
     path('sliders/add/', views.slider_add, name='sliders_add'),
-    path('sliders/edit/<int:id>/', views.slider_edit, name='sliders_edit'),
-    path('sliders/delete/<int:id>/', views.slider_delete, name='sliders_delete'),
+    path('sliders/edit/<int:pk>/', views.slider_edit, name='sliders_edit'),
+    path('sliders/delete/<int:pk>/', views.slider_delete, name='sliders_delete'),
 
     # Offer
     path('offers/', views.offer_list, name='offer'),
     path('offers/add/', views.offer_add, name='offer_add'),
-    path('offers/edit/<int:id>/', views.offer_edit, name='offer_edit'),
-    path('offers/delete/<int:id>/', views.offer_delete, name='offer_delete'),
+    path('offers/edit/<int:pk>/', views.offer_edit, name='offer_edit'),
+    path('offers/delete/<int:pk>/', views.offer_delete, name='offer_delete'),
 
     # Offers List
     path('offers-list/', views.offers_list, name='offers'),
     path('offers-list/add/', views.offers_add, name='offers_add'),
-    path('offers-list/edit/<int:id>/', views.offers_edit, name='offers_edit'),
-    path('offers-list/delete/<int:id>/', views.offers_delete, name='offers_delete'),
+    path('offers-list/edit/<int:pk>/', views.offers_edit, name='offers_edit'),
+    path('offers-list/delete/<int:pk>/', views.offers_delete, name='offers_delete'),
 ]

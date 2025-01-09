@@ -109,3 +109,48 @@
         </div>
     </section>    
 </header>
+
+
+<script>
+    // JavaScript to toggle the mobile menu
+    document.addEventListener('DOMContentLoaded', () => {
+        // Get elements
+        const searchBar = document.getElementById('search-bar');
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const profileMenuButton = document.getElementById('profile-menu-button');
+        const profileMenu = document.getElementById('profile-menu');
+    
+        // Toggle mobile menu
+        mobileMenuButton.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+            document.body.classList.toggle('overflow-hidden', !mobileMenu.classList.contains('hidden'));
+        });
+    
+        // Hide mobile menu when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+                mobileMenu.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+            }
+        });
+    
+        // Toggle profile menu
+        profileMenuButton.addEventListener('click', (event) => {
+            event.stopPropagation(); // Prevent the event from propagating to the document
+            profileMenu.classList.toggle('hidden');
+        });
+    
+        // Hide profile menu when clicking outside
+        document.addEventListener('click', (event) => {
+            if (!profileMenu.contains(event.target) && !profileMenuButton.contains(event.target)) {
+                profileMenu.classList.add('hidden');
+            }
+        });
+    
+        // Hide profile menu on scroll
+        window.addEventListener('scroll', () => {
+            profileMenu.classList.add('hidden');
+        });            
+    });
+</script>

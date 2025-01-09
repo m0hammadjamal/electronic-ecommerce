@@ -45,9 +45,9 @@
                                     {% for instance in instances %}
                                     <tr>
                                         <td>{{ instance.code }}</td>
-                                        <td>{{ instance.discount_type }}</td>
+                                        <td>{{ instance.description }}</td>
                                         <td>{{ instance.discount_value }}</td>
-                                        <td>{{ instance.expiration_date }}</td>
+                                        <td>{{ instance.valid_until }}</td>
                                         <td>
                                             <a href="{% url 'managers:coupons_edit' id=instance.id %}" id="custom-btn">EDIT</a>
                                         </td>

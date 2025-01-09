@@ -65,10 +65,10 @@ class ProductForm(forms.ModelForm):
             "brand": forms.Select(attrs={"class": "form-control"}),
             "rating": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Rating"}),
             "stock": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Stock"}),
-            "delivery_title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Delivery Title"}),
-            "delivery_duration": forms.TextInput(attrs={"class": "form-control", "placeholder": "Delivery Duration"}),
-            "garantee_title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Guarantee Title"}),
-            "garantee_time": forms.TextInput(attrs={"class": "form-control", "placeholder": "Guarantee Time"}),
+            "delivery_title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Delivery Title","value": "Free Delivery"}),
+            "delivery_duration": forms.TextInput(attrs={"class": "form-control", "placeholder": "Delivery Duration","value": "1-2 day"}),
+            "garantee_title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Guarantee Title","value": "Guaranteed"}),
+            "garantee_time": forms.TextInput(attrs={"class": "form-control", "placeholder": "Guarantee Time","value": "1 year"}),
             "sales_count": forms.NumberInput(attrs={"class": "form-control", "placeholder": "Sales Count"}),
         }
 
@@ -93,7 +93,7 @@ class ProductImageForm(forms.ModelForm):
         fields = ["product", "variant", "image", "alt_text"]
         widgets = {
             "product": forms.Select(attrs={"class": "form-control"}),
-            "variant": forms.Select(attrs={"class": "form-control"}),
+            "variant": forms.SelectMultiple(attrs={"class": "form-control"}),
             "image": forms.FileInput(attrs={"class": "form-control"}),
             "alt_text": forms.TextInput(attrs={"class": "form-control", "placeholder": "Alt Text"}),
         }
@@ -170,7 +170,7 @@ class ServiceForm(forms.ModelForm):
         widgets = {
             "title": forms.TextInput(attrs={"class": "form-control", "placeholder": "Service Title"}),
             "description": forms.Textarea(attrs={"class": "form-control", "placeholder": "Description"}),
-            "image": forms.ClearableFileInput(attrs={"class": "form-control"}),  # For image upload
+            "image": forms.FileInput(attrs={"class": "form-control"}),  # For image upload
         }
 
 
@@ -310,24 +310,26 @@ class ReviewForm(forms.ModelForm):
 class UserForm(UserCreationForm):
     class Meta:
         model = User
-        fields = ["email", "phone_number", "is_manager", "is_customer"]
+        fields = [
+            "first_name",
+            "last_name",
+            "email",
+            "phone_number",
+            "password1",  # For the password field from UserCreationForm
+            "password2",  # For password confirmation
+            "is_manager",
+            "is_customer",
+        ]
         widgets = {
+            "first_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "First Name"}),
+            "last_name": forms.TextInput(attrs={"class": "form-control", "placeholder": "Last Name"}),
             "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Email"}),
             "phone_number": forms.TextInput(attrs={"class": "form-control", "placeholder": "Phone Number"}),
-            "is_manager": forms.CheckboxInput(attrs={"class": "form-check-input"}),
-            "is_customer": forms.CheckboxInput(attrs={"class": "form-check-input"}),
+            "is_manager": forms.CheckboxInput(attrs={"class": "form-check-input nono"}),
+            "is_customer": forms.CheckboxInput(attrs={"class": "form-check-input nono"}),
         }
 
 
-class OTPVerifierForm(forms.ModelForm):
-    class Meta:
-        model = OTPVerifier
-        fields = ["user", "email", "otp"]
-        widgets = {
-            "user": forms.Select(attrs={"class": "form-control"}),
-            "email": forms.EmailInput(attrs={"class": "form-control", "placeholder": "Email"}),
-            "otp": forms.NumberInput(attrs={"class": "form-control", "placeholder": "OTP"}),
-        }
 
 class SliderForm(forms.ModelForm):
     class Meta:

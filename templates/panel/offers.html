@@ -25,31 +25,30 @@
                     <div class="card-body">
                         <div class="heading-line">
                             <h4 class="card-title m-0 p-0">{{ name }}</h4>
-                            <a href="{% url 'add_offer' %}" class="btn btn-primary float-right">Add New Offer</a>
+                            <a href="{% url 'managers:offer_add' %}" class="btn btn-primary float-right">Add New Baner</a>
                         </div>
                         <div class="table-responsive">
                             <table class="table table-bordered zero-configuration">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
-                                        <th>TITLE</th>
-                                        <th>DESCRIPTION</th>
-                                        <th>DISCOUNT (%)</th>
-                                        <th>START DATE</th>
-                                        <th>END DATE</th>
-                                        <th>CREATED AT</th>
+                                        <th>NAME</th>
+                                        <th>IMAGE</th>
+                                        <th>URL</th>
+                                        <th>ACTIONS</th>                                        
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {% for instance in instances %}
                                     <tr>
                                         <td>{{ instance.id }}</td>
-                                        <td>{{ instance.title }}</td>
-                                        <td>{{ instance.description }}</td>
-                                        <td>{{ instance.discount }}</td>
-                                        <td>{{ instance.start_date }}</td>
-                                        <td>{{ instance.end_date }}</td>
-                                        <td>{{ instance.created_at }}</td>
+                                        <td>{{ instance.name }}</td>
+                                        <td><img src="{{ instance.image.url }}" alt="image" style="width: 80px; border-radius: 8px;"></td>
+                                        <td>{{ instance.url }}</td>
+                                        <td>
+                                            <a href="{% url 'managers:offer_edit' instance.pk %}" class="btn btn-sm btn-info">Edit</a>
+                                            <a href="{% url 'managers:offer_delete' instance.pk %}" class="btn btn-sm btn-danger">Delete</a>
+                                        </td>
                                     </tr>
                                     {% endfor %}
                                 </tbody>

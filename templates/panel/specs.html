@@ -4,9 +4,6 @@
 
 {% include 'includes/admin-nav.html' %}
 
-<!--**********************************
-    Content body start
-***********************************-->
 <div class="content-body">
     <div class="row page-titles mx-0">
         <div class="col p-md-0">
@@ -16,15 +13,14 @@
             </ol>
         </div>
     </div>
-    <!-- row -->
 
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card">                    
                     <div class="card-body">
                         <div class="heading-line">
-                            <h4 class="card-title m-0 p-0">{{name}}</h4>
+                            <h4 class="card-title m-0 p-0">{{name}} <p style="color: red; margin-top: 10px;">NOTE : 6 specs for 1 product</p></h4>
                             <div>
                                 <a href="{% url 'managers:specs_add' %}" id="custom-btn">ADD NEW</a>
                             </div>
@@ -33,8 +29,9 @@
                             <table class="table table-bordered zero-configuration" style="border-radius: 14px;">
                                 <thead>
                                     <tr>
-                                        <th>NAME</th>
-                                        <th>DESCRIPTION</th>
+                                        <th>PRODUCT</th>
+                                        <th>IMAGE</th>
+                                        <th>DETAIL</th>
                                         <th>EDIT</th>
                                         <th>DELETE</th>
                                     </tr>
@@ -42,10 +39,11 @@
                                 <tbody>
                                     {% for instance in instances %}
                                     <tr>
-                                        <td>{{ instance.name }}</td>
-                                        <td>{{ instance.description }}</td>
+                                        <td>{{ instance.product }}</td>  <!-- Display product -->
+                                        <td>{{ instance.image }}</td>    <!-- Display image (if relevant) -->
+                                        <td>{{ instance.detail }}</td>   <!-- Display detail -->
                                         <td>
-                                            <a href="{% url 'managers:specs_add' id=instance.id %}" id="custom-btn">EDIT</a>
+                                            <a href="{% url 'managers:specs_edit' id=instance.id %}" id="custom-btn">EDIT</a>
                                         </td>
                                         <td>
                                             <a href="{% url 'managers:specs_delete' id=instance.id %}" id="custom-red">DELETE</a>
@@ -60,10 +58,6 @@
             </div>
         </div>
     </div>
-    <!-- #/ container -->
 </div>
-<!--**********************************
-    Content body end
-***********************************-->
 
 {% endblock %}

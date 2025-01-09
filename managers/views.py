@@ -77,12 +77,193 @@ def logout(request):
     auth_logout(request)
     return HttpResponseRedirect(reverse("managers:login"))
 
+
+@login_required(login_url="/app/login")
+@allow_manager
+def order(request,id):
+    user = request.user
+    manager = Manager.objects.get(user=user)
+    
+    instance = get_object_or_404(Order, id=id)
+
+    
+    context= {
+        "title": "Orders | Dashboard",
+        "sub_title": "Orders",
+        "name": "Orders List",
+        "instance":instance,
+    }
+    return render(request, "panel/order.html", context=context)
+
+
+
+@login_required(login_url="/app/login")
+@allow_manager
+def reports(request):
+    user = request.user
+    manager = Manager.objects.get(user=user)
+    
+    instances = Order.objects.all().exclude(order_status__in=['IN', 'CA'])
+
+    
+    context= {
+        "title": "Reports | Dashboard",
+        "sub_title": "Reports",
+        "name": "Reports List",
+        "instances":instances,
+    }
+    return render(request, "panel/reports.html", context=context)
+
+
+
+
+@login_required(login_url="/app/login")
+@allow_manager
+def settings(request):
+    user = request.user
+    manager = Manager.objects.get(user=user)
+
+    if request.method == "POST":
+        first_name = request.POST.get('first_name')
+        last_name = request.POST.get('last_name')
+        phone_number = request.POST.get('phone_number')
+
+        # Update user details
+        user.first_name = first_name
+        user.last_name = last_name
+
+        # Update phone_number only if it's provided
+        if phone_number:
+            user.phone_number = phone_number
+        else:
+            user.phone_number = None  # Clear phone number if no input
+
+        user.save()
+
+        return HttpResponseRedirect(reverse('managers:settings'))
+    else:
+        context = {
+            "title": "Settings | Dashboard",
+            "sub_title": "Settings",
+            "name": "Settings",
+            "manager": manager,
+        }
+        return render(request, "panel/settings.html", context=context)
+    
+
+@login_required(login_url="/app/login")
+@allow_manager
+def password(request):
+    user = request.user
+    manager = Manager.objects.get(user=user)
+
+    if request.method == "POST":
+        password = request.POST.get('password')
+        password2 = request.POST.get('password2')
+
+        if password!= password2:
+            context= {
+                "title": "Settings | Dashboard",
+                "sub_title": "Settings",
+                "error": True,
+                "message": "Password is missmatch",
+                "name": "Settings",
+                "manager":manager,
+            }
+            return render(request, "panel/password.html", context=context)
+        
+        else:
+            user.set_password(password)
+            user.save()
+
+            return HttpResponseRedirect(reverse('managers:settings'))
+    else:
+
+        context= {
+            "title": "Settings | Dashboard",
+            "sub_title": "Settings",
+            "name": "Settings",
+            "manager":manager,
+        }
+        return render(request, "panel/password.html", context=context)
+
+
+@login_required(login_url="/app/login")
+@allow_manager
+def customer_order(request,id):
+    user = request.user
+    manager = Manager.objects.get(user=user)
+
+    customer = Customer.objects.get(id=id)
+    
+    instances = Order.objects.filter(customer=customer).exclude(order_status='IN')
+
+    
+    context= {
+        "title": "Custoemr | Dashboard",
+        "sub_title": "Custoemr",
+        "name": "Orders List",
+        "instances":instances,
+    }
+    return render(request, "panel/orders.html", context=context)
+
+
+
+
+@login_required(login_url="/app/login")
+@allow_manager
+def order_accept(request,id):
+
+    instance = get_object_or_404(Order, id=id)
+
+    instance.order_status = 'IP'
+    instance.save()
+
+    return HttpResponseRedirect(reverse("managers:order", kwargs={'id': instance.id}))
+
+
+@login_required(login_url="/app/login")
+@allow_manager
+def order_reject(request,id):
+
+    instance = get_object_or_404(Order, id=id)
+
+    instance.order_status = 'CA'
+    instance.save()
+
+    return HttpResponseRedirect(reverse("managers:order", kwargs={'id': instance.id}))
+
+
+@login_required(login_url="/app/login")
+@allow_manager
+def order_dispatched(request,id):
+
+    instance = get_object_or_404(Order, id=id)
+
+    instance.order_status = 'DI'
+    instance.save()
+
+    return HttpResponseRedirect(reverse("managers:order", kwargs={'id': instance.id}))
+
+
+@login_required(login_url="/app/login")
+@allow_manager
+def order_completed(request,id):
+
+    instance = get_object_or_404(Order, id=id)
+
+    instance.order_status = 'CO'
+    instance.save()
+
+    return HttpResponseRedirect(reverse("managers:order", kwargs={'id': instance.id}))
+
+
 @login_required(login_url="/app/login")
 @allow_manager
 def categories(request):
     user = request.user
     manager = Manager.objects.get(user=user)
-    instances = Category.objects.all()
+    instances = Category.objects.all().order_by('-id')
     context = {
         "title": "Categories | Dashboard",
         "sub_title": "Categories",
@@ -168,7 +349,7 @@ def categories_delete(request, id):
 def brands(request):
     user = request.user
     manager = Manager.objects.get(user=user)
-    instances = Brand.objects.all()
+    instances = Brand.objects.all().order_by('-id')
     context = {
         "title": "Brands | Dashboard",
         "sub_title": "Brands",
@@ -340,7 +521,7 @@ def colors_delete(request, id):
 def custom_specifications(request):
     user = request.user
     manager = Manager.objects.get(user=user)
-    instances = CustomSpecification.objects.all()
+    instances = CustomSpecification.objects.all().order_by('-id')
     context = {
         "title": "Custom Specifications | Dashboard",
         "sub_title": "Custom Specifications",
@@ -426,7 +607,7 @@ def custom_specifications_delete(request, id):
 def options(request):
     user = request.user
     manager = Manager.objects.get(user=user)
-    instances = Option.objects.all()
+    instances = Option.objects.all().order_by('-id')
     context = {
         "title": "Options | Dashboard",
         "sub_title": "Options",
@@ -513,7 +694,7 @@ def options_delete(request, id):
 def product_images(request):
     user = request.user
     manager = Manager.objects.get(user=user)
-    instances = ProductImage.objects.all()
+    instances = ProductImage.objects.all().order_by('-id')
     context = {
         "title": "Product Images | Dashboard",
         "sub_title": "Product Images",
@@ -701,12 +882,12 @@ def services(request):
 @allow_manager
 def services_add(request):
     if request.method == "POST":
-        form = ServiceForm(request.POST)
+        form = ServiceForm(request.POST, request.FILES)  # Ensure you pass request.FILES for image upload
         if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse("managers:services"))
+            form.save()  # Save the form data
+            return HttpResponseRedirect(reverse("managers:services"))  # Redirect to the services list page after submission
         else:
-            message = generate_form_errors(form)
+            message = "There were errors in the form. Please correct them below."
     else:
         form = ServiceForm()
         message = None
@@ -724,17 +905,17 @@ def services_add(request):
 @login_required(login_url="/app/login")
 @allow_manager
 def services_edit(request, id):
-    instance = Service.objects.get(id=id)
+    instance = get_object_or_404(Service, id=id)  # Better than using Service.objects.get()
 
     if request.method == "POST":
-        form = ServiceForm(request.POST, instance=instance)
+        form = ServiceForm(request.POST, request.FILES, instance=instance)  # Ensure request.FILES is included for image upload
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("managers:services"))
+            return HttpResponseRedirect(reverse("managers:services"))  # Redirect after saving
         else:
-            message = generate_form_errors(form)
+            message = "There were errors in the form. Please correct them below."
     else:
-        form = ServiceForm(instance=instance)
+        form = ServiceForm(instance=instance)  # Pre-populate form with existing instance data
         message = None
 
     context = {
@@ -763,7 +944,6 @@ def service_requests(request):
     user = request.user
     manager = Manager.objects.get(user=user)
     instances = ServiceRequest.objects.all()
-
     context = {
         "title": "Service Requests | Dashboard",
         "sub_title": "Service Requests",
@@ -830,6 +1010,18 @@ def service_requests_delete(request, id):
     instance = ServiceRequest.objects.get(id=id)
     instance.delete()
     return HttpResponseRedirect(reverse("managers:service_requests"))
+
+
+def request_service_detail_view(request, id):
+    instance = get_object_or_404(ServiceRequest, id=id)
+
+    context = {
+        "title": "Manager Dashboard | Request Details",
+        "sub_title": "Requests",
+        "name": "Service Request Details",
+        "instance": instance,
+    }
+    return render(request, "panel/request-service-detail.html", context=context)
 
 
 
@@ -1439,7 +1631,7 @@ def storages_delete(request, id):
 def icon_images(request):
     user = request.user
     manager = Manager.objects.get(user=user)
-    instances = IconImage.objects.all()
+    instances = IconImage.objects.all().order_by('-id')
 
     context = {
         "title": "Icon Images | Dashboard",
@@ -1516,7 +1708,7 @@ def icon_images_delete(request, id):
 def specs(request):
     user = request.user
     manager = Manager.objects.get(user=user)
-    instances = Spec.objects.all()
+    instances = Spec.objects.all().order_by('-id')
 
     context = {
         "title": "Specs | Dashboard",
@@ -1845,7 +2037,7 @@ def user_add(request):
                 "message": message,
                 "form": form,
             }
-            return render(request, "panel/user-add.html", context=context)
+            return render(request, "panel/add-user.html", context=context)
 
     form = UserForm()
     context = {
@@ -1854,7 +2046,7 @@ def user_add(request):
         "name": "Add User",
         "form": form,
     }
-    return render(request, "panel/user-add.html", context=context)
+    return render(request, "panel/add-user.html", context=context)
 
 
 @login_required(login_url="/app/login")
@@ -1877,7 +2069,7 @@ def user_edit(request, pk):
                 "form": form,
                 "instance": instance,
             }
-            return render(request, "panel/user-add.html", context=context)
+            return render(request, "panel/add-user.html", context=context)
 
     form = UserForm(instance=instance)
     context = {
@@ -1887,7 +2079,7 @@ def user_edit(request, pk):
         "form": form,
         "instance": instance,
     }
-    return render(request, "panel/user-add.html", context=context)
+    return render(request, "panel/add-user.html", context=context)
 
 
 @login_required(login_url="/app/login")
@@ -1917,7 +2109,7 @@ def otpverifier_list(request):
 
 @login_required(login_url="/app/login")
 @allow_manager
-def slider_list(request):
+def sliders(request):
     user = request.user
     manager = Manager.objects.get(user=user)
     instances = Slider.objects.all()
@@ -1937,7 +2129,7 @@ def slider_add(request):
         form = SliderForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("managers:slider_list"))
+            return HttpResponseRedirect(reverse("managers:sliders"))
         else:
             message = generate_form_errors(form)
             context = {
@@ -1948,7 +2140,7 @@ def slider_add(request):
                 "message": message,
                 "form": form,
             }
-            return render(request, "panel/slider-add.html", context=context)
+            return render(request, "panel/add-slider.html", context=context)
 
     form = SliderForm()
     context = {
@@ -1957,7 +2149,7 @@ def slider_add(request):
         "name": "Add Slider",
         "form": form,
     }
-    return render(request, "panel/slider-add.html", context=context)
+    return render(request, "panel/add-slider.html", context=context)
 
 
 @login_required(login_url="/app/login")
@@ -1968,7 +2160,7 @@ def slider_edit(request, pk):
         form = SliderForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("managers:slider_list"))
+            return HttpResponseRedirect(reverse("managers:sliders"))
         else:
             message = generate_form_errors(form)
             context = {
@@ -1980,7 +2172,7 @@ def slider_edit(request, pk):
                 "form": form,
                 "instance": instance,
             }
-            return render(request, "panel/slider-add.html", context=context)
+            return render(request, "panel/add-slider.html", context=context)
 
     form = SliderForm(instance=instance)
     context = {
@@ -1990,7 +2182,7 @@ def slider_edit(request, pk):
         "form": form,
         "instance": instance,
     }
-    return render(request, "panel/slider-add.html", context=context)
+    return render(request, "panel/add-slider.html", context=context)
 
 
 @login_required(login_url="/app/login")
@@ -1998,7 +2190,7 @@ def slider_edit(request, pk):
 def slider_delete(request, pk):
     instance = get_object_or_404(Slider, pk=pk)
     instance.delete()
-    return HttpResponseRedirect(reverse("managers:slider_list"))
+    return HttpResponseRedirect(reverse("managers:sliders"))
 
 
 @login_required(login_url="/app/login")
@@ -2023,7 +2215,7 @@ def offer_add(request):
         form = OfferForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("managers:offer_list"))
+            return HttpResponseRedirect(reverse("managers:offer"))
         else:
             message = generate_form_errors(form)
             context = {
@@ -2034,7 +2226,7 @@ def offer_add(request):
                 "message": message,
                 "form": form,
             }
-            return render(request, "panel/offer-add.html", context=context)
+            return render(request, "panel/add-offer.html", context=context)
 
     form = OfferForm()
     context = {
@@ -2043,7 +2235,7 @@ def offer_add(request):
         "name": "Add Offer",
         "form": form,
     }
-    return render(request, "panel/offer-add.html", context=context)
+    return render(request, "panel/add-offer.html", context=context)
 
 
 @login_required(login_url="/app/login")
@@ -2054,7 +2246,7 @@ def offer_edit(request, pk):
         form = OfferForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("managers:offer_list"))
+            return HttpResponseRedirect(reverse("managers:offer"))
         else:
             message = generate_form_errors(form)
             context = {
@@ -2066,7 +2258,7 @@ def offer_edit(request, pk):
                 "form": form,
                 "instance": instance,
             }
-            return render(request, "panel/offer-add.html", context=context)
+            return render(request, "panel/add-offer.html", context=context)
 
     form = OfferForm(instance=instance)
     context = {
@@ -2076,7 +2268,7 @@ def offer_edit(request, pk):
         "form": form,
         "instance": instance,
     }
-    return render(request, "panel/offer-add.html", context=context)
+    return render(request, "panel/add-offer.html", context=context)
 
 
 @login_required(login_url="/app/login")
@@ -2084,7 +2276,7 @@ def offer_edit(request, pk):
 def offer_delete(request, pk):
     instance = get_object_or_404(Offer, pk=pk)
     instance.delete()
-    return HttpResponseRedirect(reverse("managers:offer_list"))
+    return HttpResponseRedirect(reverse("managers:offer"))
 
 
 @login_required(login_url="/app/login")
@@ -2109,7 +2301,7 @@ def offers_add(request):
         form = OffersForm(request.POST, request.FILES)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("managers:offers_list"))
+            return HttpResponseRedirect(reverse("managers:offers"))
         else:
             message = generate_form_errors(form)
             context = {
@@ -2120,7 +2312,7 @@ def offers_add(request):
                 "message": message,
                 "form": form,
             }
-            return render(request, "panel/offers-add.html", context=context)
+            return render(request, "panel/add-offers.html", context=context)
 
     form = OffersForm()
     context = {
@@ -2129,7 +2321,7 @@ def offers_add(request):
         "name": "Add Offers",
         "form": form,
     }
-    return render(request, "panel/offers-add.html", context=context)
+    return render(request, "panel/add-offers.html", context=context)
 
 
 @login_required(login_url="/app/login")
@@ -2140,7 +2332,7 @@ def offers_edit(request, pk):
         form = OffersForm(request.POST, request.FILES, instance=instance)
         if form.is_valid():
             form.save()
-            return HttpResponseRedirect(reverse("managers:offers_list"))
+            return HttpResponseRedirect(reverse("managers:offers"))
         else:
             message = generate_form_errors(form)
             context = {
@@ -2152,7 +2344,7 @@ def offers_edit(request, pk):
                 "form": form,
                 "instance": instance,
             }
-            return render(request, "panel/offers-add.html", context=context)
+            return render(request, "panel/add-offers.html", context=context)
 
     form = OffersForm(instance=instance)
     context = {
@@ -2162,7 +2354,7 @@ def offers_edit(request, pk):
         "form": form,
         "instance": instance,
     }
-    return render(request, "panel/offers-add.html", context=context)
+    return render(request, "panel/add-offers.html", context=context)
 
 
 @login_required(login_url="/app/login")
@@ -2170,4 +2362,4 @@ def offers_edit(request, pk):
 def offers_delete(request, pk):
     instance = get_object_or_404(Offers, pk=pk)
     instance.delete()
-    return HttpResponseRedirect(reverse("managers:offers_list"))
+    return HttpResponseRedirect(reverse("managers:offers"))

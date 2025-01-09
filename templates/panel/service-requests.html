@@ -36,7 +36,7 @@
                                         <th>REQUEST ID</th>
                                         <th>USER</th>
                                         <th>SERVICE</th>
-                                        <th>STATUS</th>
+                                        <th>EMAIL</th>
                                         <th>EDIT</th>
                                         <th>DELETE</th>
                                     </tr>
@@ -45,11 +45,11 @@
                                     {% for instance in instances %}
                                     <tr>
                                         <td>{{ instance.id }}</td>
-                                        <td>{{ instance.user }}</td>
+                                        <td>{{ instance.name }}</td>
                                         <td>{{ instance.service }}</td>
-                                        <td>{{ instance.status }}</td>
+                                        <td>{{ instance.email }}</td>
                                         <td>
-                                            <a href="{% url 'managers:service_requests_edit' id=instance.id %}" id="custom-btn">EDIT</a>
+                                            <a href="{% url 'managers:service_requests_details' id=instance.id %}" id="custom-btn">VIEW</a>
                                         </td>
                                         <td>
                                             <a href="{% url 'managers:service_requests_delete' id=instance.id %}" id="custom-red">DELETE</a>

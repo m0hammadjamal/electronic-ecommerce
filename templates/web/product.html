@@ -196,12 +196,20 @@
             
             <p class="text-[14px] font-[400] text-[#6C6C6C] leading-[24px] w-full mb-[24px]">{{product.description}}</p>
             <div class="mb-[24px]">
-                {% if is_in_cart %}
-                <a href="{% url 'web:cart' %}" class="w-full block text-center text-[16px] font-[500] text-[#FFFFFF] py-[16px] m-auto rounded-[6px] bg-[#000000]">Go to Cart</a>
+                {% if not stock_available %}
+                    <div class="w-full block text-center text-[16px] font-[500] text-[#FFFFFF] py-[16px] m-auto rounded-[6px] bg-gray-500 cursor-not-allowed">
+                        Out of Stock
+                    </div>
+                {% elif is_in_cart %}
+                    <a href="{% url 'web:cart' %}" class="w-full block text-center text-[16px] font-[500] text-[#FFFFFF] py-[16px] m-auto rounded-[6px] bg-[#000000]">
+                        Go to Cart
+                    </a>
                 {% else %}
-                <button type="submit" class="w-full block text-center text-[16px] font-[500] text-[#FFFFFF] py-[16px] m-auto rounded-[6px] bg-[#000000]">Add to Cart</button>
+                    <button type="submit" class="w-full block text-center text-[16px] font-[500] text-[#FFFFFF] py-[16px] m-auto rounded-[6px] bg-[#000000]">
+                        Add to Cart
+                    </button>
                 {% endif %}
-            </div>
+            </div>            
             
             <ul class="grid grid-cols-3 justify-center gap-[8px] mb-[24px] m-auto">
                 <li class="sm:flex items-center">
@@ -325,16 +333,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 <div id="slider" class="flex gap-5 smooth-scroll overflow-x-auto scrollbar-hide pb-2">
                     {% for related in related_products %}
                     <div class="min-w-[150px] md:min-w-[200px] max-w-[150px] md:max-w-[200px] shadow-lg rounded-xl relative">
-                        <div class="absolute right-2 top-5 p-2 rounded-full bg-gray-200">
-                            <a href="{% url 'wishlist:add' related.id %}">
+                        <!-- <div class="absolute right-2 top-5 p-2 rounded-full bg-gray-200">
+                            <a href="{% url 'web:add_to_wishlist' related.id %}">
                                 <img src="{% static './web/images/like.png' %}" alt="Add to Wishlist" class="w-[14px]">
                             </a>
-                        </div>
-                        <a href="{% url 'product' related.id %}">
-                            <img src="{{ related.main_image.url }}" alt="{{ related.name }}" class="w-full rounded-lg">
+                        </div> -->
+                        <a href="{% url 'web:product' related.id %}">
+                            <img src="{{ related.mainimage.url }}" alt="{{ related.name }}" class="w-full rounded-lg">
                         </a>
                         <h3 class="text-[15px] pl-4 font-normal my-2">
-                            <a href="{% url 'product' related.id %}">
+                            <a href="{% url 'web:product' related.id %}">
                                 {{ related.name }}
                             </a>
                         </h3>
@@ -392,12 +400,17 @@ document.addEventListener("DOMContentLoaded", function () {
             <h1 class="text-[24px] font-[500] leading-[32px] mb-[48px]">
                 Reviews
             </h1>
-            <ul class="md:min-w-[174px] py-[16px] rounded-[25px] bg-[#FAFAFA] px-[32px] text-center md:mr-[48px]">
+            <ul class="md:min-w-[174px] py-[16px] rounded-[25px] bg-[#FAFAFA] px-[32px] text-center md:mr-[48px] mb-5">
                 <!-- Overall Rating -->
                 <li class="text-[56px] font-[500]">{{ avg_rating }}</li>
                 <li class="text-[15px] text-[#CDCDCD] mb-[16px]">of {{ review_count }} reviews</li>                    
             </ul>
-            <a href="{% url 'web:add_review' id=product.id %}">review</a>
+            {% if has_ordered %}
+            <a href="{% url 'web:add_review' id=product.id %}"
+               class="inline-block w-full mb-3 text-center bg-[#2a2a2a] hover:bg-[#000000] text-white font-semibold py-2 px-4 rounded mt-4">
+                Add Review
+            </a>
+            {% endif %}            
             {% for review in product.reviews.all %}
             <ul class="flex bg-[#FAFAFA] py-[24px] rounded-[10px] mb-[24px]">
                 <!-- User Image -->
@@ -449,46 +462,6 @@ document.addEventListener("DOMContentLoaded", function () {
 {% include 'includes/footer.html' %}
 
 <script>
-    // JavaScript to toggle the mobile menu
-    const searchBar = document.getElementById('search-bar');
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-    const profileMenuButton = document.getElementById('profile-menu-button');
-    const profileMenu = document.getElementById('profile-menu');
-
-    mobileMenuButton.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-        document.body.classList.toggle('overflow-hidden', !mobileMenu.classList.contains('hidden'));
-    });
-
-    // Hide mobile menu when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
-            mobileMenu.classList.add('hidden');
-            document.body.classList.remove('overflow-hidden');
-        }
-    });
-
-    // Toggle profile menu
-    profileMenuButton.addEventListener('click', (event) => {
-        event.stopPropagation(); // Prevent the event from propagating to the document
-        profileMenu.classList.toggle('hidden');
-    });
-
-    // Hide profile menu when clicking outside
-    document.addEventListener('click', (event) => {
-        if (!profileMenu.contains(event.target) && !profileMenuButton.contains(event.target)) {
-            profileMenu.classList.add('hidden');
-        }
-    });
-
-    // Hide profile menu on scroll
-    window.addEventListener('scroll', () => {
-        profileMenu.classList.add('hidden');
-    });
-
-
-
     const slider = document.getElementById('slider');
     const slideLeft = document.getElementById('slideLeft');
     const slideRight = document.getElementById('slideRight');
@@ -521,19 +494,6 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 
-
-          // Hide search bar on scroll
-          let lastScrollY = window.scrollY;
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > lastScrollY) {
-            searchBar.classList.add('hidden');
-            mobileSearchBar.classList.add('hidden');
-        } else {
-            searchBar.classList.remove('hidden');
-            mobileSearchBar.classList.remove('hidden');
-        }
-        lastScrollY = window.scrollY;
-    });
 
 
     // view more 

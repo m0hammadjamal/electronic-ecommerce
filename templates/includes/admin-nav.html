@@ -88,13 +88,31 @@
                  <div style="margin: 10px 14px; border-bottom: 1px solid #c8c8c8;"></div>
 
                  <li class="mega-menu mega-menu-sm">
+                    <a class="has-arrow" href="javascript:void()" aria-expanded="false">
+                        <i class="fa-solid fa-tags mb-1 mr-2"></i><span class="nav-text">services</span>
+                    </a>
+                    <ul aria-expanded="false">
+                       <li><a href="{% url 'managers:services' %}">Service</a></li>
+                       <li><a href="{% url 'managers:service_requests' %}">Service Request</a></li>
+                   </ul>
+                </li>
+
+                 <li class="mega-menu mega-menu-sm">
                      <a class="has-arrow" href="javascript:void()" aria-expanded="false">
-                         <i class="fa-solid fa-utensils mb-1 mr-2"></i><span class="nav-text">Products</span>
+                         <i class="fa-solid fa-utensils mb-1 mr-2"></i><span class="nav-text">Product</span>
                      </a>
                      <ul aria-expanded="false">
+                        <li><a href="{% url 'managers:products' %}">Products</a></li>
+                        <li><a href="{% url 'managers:options' %}">Vaients</a></li>
                         <li><a href="{% url 'managers:categories' %}">Catgeories</a></li>
-                        <li><a href="{% url 'managers:products' %}">Items</a></li>
                         <li><a href="{% url 'managers:brands' %}">Brands</a></li>
+                        <li><a href="{% url 'managers:colors' %}">Colors</a></li>
+                        <li><a href="{% url 'managers:custom_specifications' %}">Specificstions</a></li>
+                        <li><a href="{% url 'managers:product_images' %}">Product Images</a></li>
+                        <li><a href="{% url 'managers:rams' %}">Rams</a></li>
+                        <li><a href="{% url 'managers:storages' %}">Storages</a></li>
+                        <li><a href="{% url 'managers:icon_images' %}">Icon Images</a></li>
+                        <li><a href="{% url 'managers:specs' %}">Specs</a></li>
                      </ul>
                  </li>
                  <li class="mega-menu mega-menu-sm">
@@ -102,7 +120,8 @@
                          <i class="fa-solid fa-user-group mb-1 mr-2"></i><span class="nav-text">Users</span>
                      </a>
                      <ul aria-expanded="false">
-                         <li><a href="{% url 'managers:customers' %}">Customers</a></li>
+                         <li><a href="{% url 'managers:customers' %}">Customers</a></li>                         
+                         <li><a href="{% url 'managers:user_list' %}">Users</a></li>
                      </ul>
                  </li>
 
@@ -111,9 +130,10 @@
                          <i class="fa-solid fa-tags mb-1 mr-2"></i><span class="nav-text">Promotions</span>
                      </a>
                      <ul aria-expanded="false">
+                        <li><a href="{% url 'managers:coupons' %}">Coupons</a></li>
                         <li><a href="{% url 'managers:sliders' %}">Sliders</a></li>
-                        <!-- <li><a href="#">Offers</a></li>
-                        <li><a href="#">Notifications</a></li> -->
+                        <li><a href="{% url 'managers:offer' %}">Baner 1</a></li>
+                        <li><a href="{% url 'managers:offers' %}">Baner 2</a></li>
                     </ul>
                  </li>
                  <li class="mega-menu mega-menu-sm">
@@ -121,12 +141,12 @@
                          <i class="fa-solid fa-money-bill-trend-up mb-1 mr-2"></i><span class="nav-text">Transactions</span>
                      </a>
                      <ul aria-expanded="false">
-                         <li><a href="#">Reports</a></li>
+                         <li><a href="{% url 'managers:reports' %}">Reports</a></li>
                      </ul>
                  </li>
                  <div style="margin: 10px 14px; border-bottom: 1px solid #c8c8c8;"></div>
                  <li>
-                     <a href="#" aria-expanded="false">
+                     <a href="{% url 'managers:settings' %}" aria-expanded="false">
                          <i class="fa-solid fa-gear mb-1 mr-2"></i><span class="nav-text">Settings</span>
                      </a>
                  </li>

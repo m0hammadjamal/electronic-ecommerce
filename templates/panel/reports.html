@@ -32,35 +32,31 @@
                                         <thead>
                                             <tr>
                                                 <th>#</th>
-                                                <th>ID</th>
                                                 <th>Customer</th>
-                                                <th>Items</th>
+                                                <th>Order ID</th>
                                                 <th>Date</th>
                                                 <th>Amount</th>
+                                                <th>Method</th>
                                                 <th>Status</th>
-                                                <th>View</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {% for instance in instances %}
                                             <tr>
                                                 <td>#</td>
-                                                <td>{{instance.order_id}}</td>
                                                 <td>{{instance.first_name}} {{instance.last_name}}</td>
-                                                <td>
-                                                    {% for item in instance.items.all %}
-                                                    {{item.product.name}},
-                                                    {% endfor %}
-                                                </td>
+                                                <td>{{instance.order_id}}</td>
                                                 <td>
                                                     {{instance.created_datetime|date:"M. d Y - g:i A"}}
                                                 </td>
                                                 <td>
                                                     QR {{instance.total}}
                                                 </td>
-                                                <td>{{instance.get_order_status_display}}</td>
                                                 <td>
-                                                    <a href="{% url 'managers:order' id=instance.id %}" id="custom-btn">VIEW</a>
+                                                    COD
+                                                </td>
+                                                <td>
+                                                    Paid
                                                 </td>
                                                 
                                             </tr>

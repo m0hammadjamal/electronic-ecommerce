@@ -21,38 +21,112 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card" style="background-color: #b5c8eb;">
                     <div class="card-body">
                         <h4 class="card-title">{{name}}</h4>
                         <div class="basic-form">
                             <form action="" method="post" enctype="multipart/form-data" class="ajax redirect">
                                 {% csrf_token %}
                                 <div class="form-row">
+                                    <!-- SKU -->
                                     <div class="form-group col-12 col-md-6">
-                                        <label>Name</label>
+                                        <label>SKU</label>
+                                        {{ form.sku }}
+                                    </div>
+                                    <!-- Name -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Product Name</label>
                                         {{ form.name }}
                                     </div>
-                                    <div class="form-group col-12 col-md-6">
+                                    <!-- Description -->
+                                    <div class="form-group col-12 col-md-12">
                                         <label>Description</label>
                                         {{ form.description }}
                                     </div>
-                                    <div class="form-group col-12 col-md-6">
-                                        <label>Price</label>
-                                        {{ form.price }}
+                                    <!-- Details -->
+                                    <div class="form-group col-12 col-md-12">
+                                        <label>Details</label>
+                                        {{ form.details }}
                                     </div>
+                                    <!-- Main Image -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Main Image</label>
+                                        {{ form.mainimage }}
+                                    </div>
+                                    <!-- Regular Price -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Regular Price</label>
+                                        {{ form.regular_price }}
+                                    </div>
+                                    <!-- Sale Price -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Sale Price</label>
+                                        {{ form.sale_price }}
+                                    </div>
+                                    <!-- Offer Percentage -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Offer Percentage</label>
+                                        {{ form.offer_percentage }}
+                                    </div>
+                                    <!-- Video -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Video</label>
+                                        {{ form.video }}
+                                    </div>
+                                    <!-- Specifications -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Specifications</label>
+                                        {{ form.specifications }}
+                                    </div>
+                                    <!-- Category -->
                                     <div class="form-group col-12 col-md-6">
                                         <label>Category</label>
                                         {{ form.category }}
                                     </div>
+                                    <!-- Brand -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Brand</label>
+                                        {{ form.brand }}
+                                    </div>
+                                    <!-- Rating -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Rating</label>
+                                        {{ form.rating }}
+                                    </div>
+                                    <!-- Stock -->
                                     <div class="form-group col-12 col-md-6">
                                         <label>Stock</label>
                                         {{ form.stock }}
                                     </div>
+                                    <!-- Delivery Title -->
                                     <div class="form-group col-12 col-md-6">
-                                        <label>Image</label>
-                                        {{ form.image }}
+                                        <label>Delivery Title</label>
+                                        {{ form.delivery_title }}
                                     </div>
-                                    <button class="btn login-form__btn submit button" type="submit">Submit</button>
+                                    <!-- Delivery Duration -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Delivery Duration</label>
+                                        {{ form.delivery_duration }}
+                                    </div>
+                                    <!-- Guarantee Title -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Guarantee Title</label>
+                                        {{ form.garantee_title }}
+                                    </div>
+                                    <!-- Guarantee Time -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Guarantee Time</label>
+                                        {{ form.garantee_time }}
+                                    </div>
+                                    <!-- Sales Count -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Sales Count</label>
+                                        {{ form.sales_count }}
+                                    </div>
+                                    <!-- Submit Button -->
+                                    <div class="form-group col-12">
+                                        <button class="btn login-form__btn submit button" type="submit">Submit</button>
+                                    </div>
                                 </div>
                                 {% if message %}
                                     <p>{{ message }}</p>

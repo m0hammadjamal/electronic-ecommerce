@@ -91,8 +91,14 @@ class ServiceRequest(CommonModel):
     details = models.TextField()
     submitted_at = models.DateTimeField(auto_now_add=True)
 
+    class Meta:
+        db_table = 'customers_service_request'
+        verbose_name = 'service_request'
+        verbose_name_plural = 'service_requests'
+        ordering = ["-id"]
+
     def __str__(self):
-        return f"Request for {self.service.title} by {self.name}"
+        return self.service.title
     
 
 
@@ -187,6 +193,12 @@ class Order(CommonModel):
     email = models.CharField(max_length=255)
     phone_number = models.BigIntegerField()
     order_status = models.CharField(max_length=25, choices=ORDER_STATUS ,default='IN')
+    address1 = models.CharField(max_length=100,blank=True, null=True)
+    address2 = models.CharField(max_length=100,blank=True, null=True)
+    city = models.CharField(max_length=25,blank=True, null=True)
+    state = models.CharField(max_length=25,blank=True, null=True)
+    pincode = models.CharField(max_length=25,blank=True, null=True)
+    address_type = models.CharField(max_length=255, choices=ADDRESS_TYPE_CHOICE,blank=True, null=True)
 
     class Meta:
         db_table = 'customers_order'

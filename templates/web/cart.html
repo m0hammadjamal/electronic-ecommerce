@@ -102,12 +102,30 @@
                         <p class="text-[14px] font-bold">${{ total_amount_to_pay }}</p>
                     </div>
             
-                    <a 
-                        href="{% url 'web:checkout' %}" 
-                        class="w-full text-white text-[14px] rounded-full py-2 px-5 text-center block bg-[#A41E11]"
-                    >
-                        Proceed to checkout
-                    </a>
+                    {% if out_of_stock_items %}
+                        <div class="text-red-500 text-sm mb-4">
+                            The following products are out of stock: 
+                            <ul class="list-disc ml-5">
+                                {% for product in out_of_stock_items %}
+                                    <li>{{ product }}</li>
+                                {% endfor %}
+                            </ul>
+                            Please remove them to proceed to checkout.
+                        </div>
+                        <button 
+                            class="w-full text-white text-[14px] rounded-full py-2 px-5 text-center bg-gray-400 cursor-not-allowed" 
+                            disabled
+                        >
+                            Proceed to checkout
+                        </button>
+                    {% else %}
+                        <a 
+                            href="{% url 'web:checkout' %}" 
+                            class="w-full text-white text-[14px] rounded-full py-2 px-5 text-center block bg-[#A41E11]"
+                        >
+                            Proceed to checkout
+                        </a>
+                    {% endif %}
                 </div>
             </div>            
         </div>
@@ -130,45 +148,7 @@
 
 
 
-<!-- footer -->
 
-
-
-<script>
-    // JavaScript to toggle the mobile menu
-    const searchBar = document.getElementById('search-bar');
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-
-    const profileMenuButton = document.getElementById('profile-menu-button');
-    const profileMenu = document.getElementById('profile-menu');
-
-
-    mobileMenuButton.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-    });
-    profileMenuButton.addEventListener('click', () => {
-        profileMenu.classList.toggle('hidden');
-    });
-
-
-          // Hide search bar on scroll
-          let lastScrollY = window.scrollY;
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > lastScrollY) {
-            searchBar.classList.add('hidden');
-            mobileSearchBar.classList.add('hidden');
-        } else {
-            searchBar.classList.remove('hidden');
-            mobileSearchBar.classList.remove('hidden');
-        }
-        lastScrollY = window.scrollY;
-    });
-
-
-
-
-</script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/1.4.0/flowbite.min.js"></script>
 

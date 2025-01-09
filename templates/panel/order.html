@@ -1,0 +1,169 @@
+{% extends "base/admin-base.html" %} {% block container %} {% load static %}
+
+
+{% include 'includes/admin-nav.html' %}
+
+
+        <!--**********************************
+            Content body start
+        ***********************************-->
+        <div class="content-body">
+
+            <div class="row page-titles mx-0">
+                <div class="col p-md-0">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="javascript:void(0)">{{sub_title}}</a></li>
+                        <li class="breadcrumb-item active"><a href="javascript:void(0)">{{name}}</a></li>
+                    </ol>
+                </div>
+            </div>
+            <!-- row -->
+
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-body">
+                                <div class="heading-line" style="display: flex; justify-content: space-between; align-items: center; margin-top: 16px; flex-wrap: wrap;">
+                                    <div>
+                                        <h4 class="card-title m-2 p-0">{{name}}</h4>
+                                        <h4 class="card-title m-2 p-0" style="font-size: 14px; color: #878484; margin-bottom: 16px;">STATUS - {{instance.get_order_status_display}}</h4>
+                                    </div>
+                                    <h4 style="font-size: 14px; color: #878484; margin-bottom: 16px;">
+                                        Change Status - 
+
+                                        {% if instance.order_status == 'PL' %}
+                                            <a href="{% url 'managers:order_accept' id=instance.id %}" id="custom-green">ACCEPT</a>
+                                            <a href="{% url 'managers:order_reject' id=instance.id %}" id="custom-red">REJECT</a>
+                                        {% elif instance.order_status == 'IP' %}
+                                            <a href="{% url 'managers:order_dispatched' id=instance.id %}" id="custom-green">DISPATCH</a>
+                                        {% elif instance.order_status == 'DI' %}
+                                            <a href="{% url 'managers:order_completed' id=instance.id %}" id="custom-green">COMPLETE</a>
+                                        {% elif instance.order_status == 'CA' %}
+                                            <a href="#" id="custom-red">CANCELLED</a>
+                                        {% else %}
+                                            <a id="custom-green">
+                                                COMPLETED
+                                            </a>
+                                        {% endif %}
+                                    </h4>
+                                </div>
+                                <div class="order_screen">
+                                    <div class="order_customer" >
+                                        <h4 class="card-title m-4 p-0">CUSTOMER</h4>
+                                        <p class="order_text">{{instance.first_name}} {{instance.last_name}}</p>
+                                        <div class="border-b"></div>
+                                        <h4 class="card-title m-4 p-0">CONTACT INFO</h4>
+                                        <p class="order_text">{{instance.email}}</p>
+                                        <p class="order_text">{{instance.phone_number}}</p>
+                                        <div class="border-b"></div>
+                                        <h4 class="card-title m-4 p-0">SHIPPING ADDRESS</h4>
+                                        <p class="order_text">
+                                            {{instance.address.address1}} {{instance.address.address2}} <br>
+                                            {{instance.address.city}} {{instance.address.state}} <br>
+                                            {{instance.address.pincode}}
+                                        </p>
+                                    </div>
+                                    <div class="table-responsive">
+                                        <div class="bill-details">
+                                            <div class="bill-head">
+                                                <div class="left">
+                                                    <h1>Bill To</h1>
+                                                    <p>{{instance.customer.user.first_name}} {{instance.customer.user.last_name}}</p>
+                                                </div>
+                                                <div class="right">
+                                                    <img src="{% static 'web/images/logo.png' %}" alt="">
+                                                    <p>ID: {{instance.order_id}}</p>
+                                                    <p>Date: {{instance.created_datetime|date:"M. d Y - g:i A"}}</p>
+                                                </div>
+                                            </div>
+                                            <table class="table table-bordered table-striped">
+                                                <thead>
+                                                    <tr>
+                                                        <th>ITEM</th>
+                                                        <th>QUANTITY</th>
+                                                        <th>AMOUNT</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {% for item in instance.items.all %}
+                                                    <tr>
+                                                        <td>
+                                                            {{item.product.name}} 
+                                                            {% if item.option %}
+                                                                ( {{item.option.name}} )
+                                                            {% endif %}
+                                                        </td>
+                                                        <td>
+                                                            {{item.quantity}}
+                                                        </td>
+                                                        <td>
+                                                            QR {{item.amount}}
+                                                        </td>
+                                                    </tr>
+                                                    {% endfor %}
+                                                </tbody>
+                                            </table>
+                                            <div class="bill-footer">
+                                                <div>
+                                                    <div class="bill-total">
+                                                        <p>Sub Total:</p>
+                                                        <p>QR {{instance.sub_total}}</p>
+                                                    </div>
+                                                    <div class="bill-total">
+                                                        <p>Discount:</p>
+                                                        <p>QR 00</p>
+                                                    </div>
+                                                    <div class="bill-total">
+                                                        <p>Delivery Charge:</p>
+                                                        <p>QR {{instance.delivery_charge}}</p>
+                                                    </div>
+                                                    
+                                                    <div class="bill-total">
+                                                        <p>Total Amount:</p>
+                                                        <p>QR {{instance.total}}</p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="border-b" style="margin-top: 24px;"></div>
+                                <div class="table-responsive">
+                                    <h4 class="card-title my-4 p-0">PAYMENTS</h4>
+                                    <div>
+                                        <table class="table table-bordered table-striped" >
+                                            <thead>
+                                                <tr>
+                                                    <th>NAME</th>
+                                                    <th>AMOUNT</th>
+                                                    <th>DATE & TIME</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>COD </td>
+                                                    <td>
+                                                        QR {{instance.total}}
+                                                    </td>
+                                                    <td>
+                                                        {{instance.created_datetime|date:"M. d Y - g:i A"}}
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- #/ container -->
+        </div>
+        <!--**********************************
+            Content body end
+        ***********************************-->
+
+
+{% endblock %}

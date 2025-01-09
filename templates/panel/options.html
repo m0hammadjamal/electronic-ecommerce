@@ -34,6 +34,9 @@
                                 <thead>
                                     <tr>
                                         <th>NAME</th>
+                                        <th>PRODUCT</th>
+                                        <th>SALE PRICE</th>
+                                        <th>STOCK</th>
                                         <th>EDIT</th>
                                         <th>DELETE</th>
                                     </tr>
@@ -42,6 +45,9 @@
                                     {% for instance in instances %}
                                     <tr>
                                         <td>{{ instance.name }}</td>
+                                        <td>{{ instance.product }}</td>
+                                        <td>{{ instance.sale_price }}</td>
+                                        <td>{{ instance.stock }}</td>
                                         <td>
                                             <a href="{% url 'managers:options_edit' id=instance.id %}" id="custom-btn">EDIT</a>
                                         </td>

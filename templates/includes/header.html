@@ -11,12 +11,12 @@
         
         <form action="#" method="get" class="w-[30%] hidden md:block">
             <div class="flex justify-between items-center border hover:border-purple-500 rounded-full py-2 px-5">
-                <input type="text" id="search-input"  name="q" class="outline-none w-full placeholder:text-[13px] font-thin" placeholder="What are you looking for?" value="{{ request.GET.q }}" required>
+                <input type="text" id="desktop-search-input"  name="q" class="outline-none w-full placeholder:text-[13px] font-thin" placeholder="What are you looking for?" value="{{ request.GET.q }}" required>
                 <button type="submit" class="w-[16px]">
                     <img src="{% static './web/images/search.png' %}" alt="image" class="w-[16px]">
                 </button>
             </div>
-            <ul id="suggestions" class="absolute left-0 right-0 bg-white border rounded-md shadow-md mt-1 hidden z-50 text-center">
+            <ul id="desktop-suggestions" class="absolute left-0 right-0 bg-white border rounded-md shadow-md mt-1 hidden z-50 text-center">
                 <!-- Suggestions dynamically added here -->
             </ul>
         </form>        
@@ -124,12 +124,12 @@
         <section class="wrapper md:hidden">
             <form method="get" id="search-bar">
                 <div class="flex justify-between items-center border rounded-full py-2 px-5">
-                    <input type="text" id="search-input"  class="outline-none w-full placeholder:text-[13px] font-thin" name="q" placeholder="What are you looking for?" value="{{ request.GET.q }}">
+                    <input type="text" id="mobile-search-input"  class="outline-none w-full placeholder:text-[13px] font-thin" name="q" placeholder="What are you looking for?" value="{{ request.GET.q }}">
                     <button type="submit">
                         <img src="{% static './web/images/search.png' %}" alt="image" class="w-[16px]">
                     </button>
                 </div>
-                <ul id="suggestions" class="absolute left-0 right-0 bg-white border rounded-md shadow-md mt-1 hidden z-50">
+                <ul id="mobile-suggestions" class="absolute left-0 right-0 bg-white border rounded-md shadow-md mt-1 hidden z-50">
                     <!-- Suggestions dynamically added here -->
                 </ul>
             </form>
@@ -137,52 +137,136 @@
     </section>
 </header>
 
+<script>
+// JavaScript to toggle the mobile menu
+document.addEventListener('DOMContentLoaded', () => {
+    // Get elements
+    const searchBar = document.getElementById('search-bar');
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const profileMenuButton = document.getElementById('profile-menu-button');
+    const profileMenu = document.getElementById('profile-menu');
 
+    // Toggle mobile menu
+    mobileMenuButton.addEventListener('click', () => {
+        mobileMenu.classList.toggle('hidden');
+        document.body.classList.toggle('overflow-hidden', !mobileMenu.classList.contains('hidden'));
+    });
+
+    // Hide mobile menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!mobileMenu.contains(event.target) && !mobileMenuButton.contains(event.target)) {
+            mobileMenu.classList.add('hidden');
+            document.body.classList.remove('overflow-hidden');
+        }
+    });
+
+    // Toggle profile menu
+    profileMenuButton.addEventListener('click', (event) => {
+        event.stopPropagation(); // Prevent the event from propagating to the document
+        profileMenu.classList.toggle('hidden');
+    });
+
+    // Hide profile menu when clicking outside
+    document.addEventListener('click', (event) => {
+        if (!profileMenu.contains(event.target) && !profileMenuButton.contains(event.target)) {
+            profileMenu.classList.add('hidden');
+        }
+    });
+
+    // Hide profile menu on scroll
+    window.addEventListener('scroll', () => {
+        profileMenu.classList.add('hidden');
+    });
+
+    // Hide search bar on scroll
+    let lastScrollY = window.scrollY;
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > lastScrollY) {
+            searchBar.classList.add('hidden');
+        } else {
+            searchBar.classList.remove('hidden');
+        }
+        lastScrollY = window.scrollY;
+    });
+});
+</script>
 
 <script>
-    const searchInput = document.getElementById('search-input');
-    const suggestionsList = document.getElementById('suggestions');
+    // Desktop
+const desktopSearchInput = document.getElementById('desktop-search-input');
+const desktopSuggestionsList = document.getElementById('desktop-suggestions');
 
-    searchInput.addEventListener('input', async () => {
-        const query = searchInput.value.trim();
+// Mobile
+const mobileSearchInput = document.getElementById('mobile-search-input');
+const mobileSuggestionsList = document.getElementById('mobile-suggestions');
 
-        if (query.length > 0) {
-            try {
-                const response = await fetch(`/?q=${encodeURIComponent(query)}`, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                    },
-                });
-                const data = await response.json();
+// Function to handle AJAX requests
+async function handleSearch(inputElement, suggestionsElement) {
+    const query = inputElement.value.trim();
 
-                if (data.suggestions.length > 0) {
-                    suggestionsList.innerHTML = data.suggestions
-                        .map(suggestion => `<li class="p-2 hover:bg-gray-100 cursor-pointer">${suggestion}</li>`)
-                        .join('');
-                    suggestionsList.classList.remove('hidden');
-                } else {
-                    suggestionsList.classList.add('hidden');
-                }
-            } catch (error) {
-                console.error("Error fetching suggestions:", error);
+    if (query.length > 0) {
+        try {
+            const response = await fetch(`/?q=${encodeURIComponent(query)}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                },
+            });
+            const data = await response.json();
+
+            if (data.suggestions.length > 0) {
+                suggestionsElement.innerHTML = data.suggestions
+                    .map(suggestion => `<li class="p-2 hover:bg-gray-100 cursor-pointer">${suggestion}</li>`)
+                    .join('');
+                suggestionsElement.classList.remove('hidden');
+            } else {
+                suggestionsElement.classList.add('hidden');
             }
-        } else {
-            suggestionsList.classList.add('hidden');
+        } catch (error) {
+            console.error("Error fetching suggestions:", error);
         }
-    });
+    } else {
+        suggestionsElement.classList.add('hidden');
+    }
+}
 
-    // Hide suggestions when clicking outside
+// Attach event listeners
+if (desktopSearchInput && desktopSuggestionsList) {
+    desktopSearchInput.addEventListener('input', () => handleSearch(desktopSearchInput, desktopSuggestionsList));
+
+    // Hide suggestions when clicking outside for desktop
     document.addEventListener('click', (e) => {
-        if (!searchInput.contains(e.target) && !suggestionsList.contains(e.target)) {
-            suggestionsList.classList.add('hidden');
+        if (!desktopSearchInput.contains(e.target) && !desktopSuggestionsList.contains(e.target)) {
+            desktopSuggestionsList.classList.add('hidden');
         }
     });
 
-    // Insert suggestion into input when clicked
-    suggestionsList.addEventListener('click', (e) => {
+    // Insert suggestion into input when clicked for desktop
+    desktopSuggestionsList.addEventListener('click', (e) => {
         if (e.target.tagName === 'LI') {
-            searchInput.value = e.target.textContent;
-            suggestionsList.classList.add('hidden');
+            desktopSearchInput.value = e.target.textContent;
+            desktopSuggestionsList.classList.add('hidden');
         }
     });
+}
+
+if (mobileSearchInput && mobileSuggestionsList) {
+    mobileSearchInput.addEventListener('input', () => handleSearch(mobileSearchInput, mobileSuggestionsList));
+
+    // Hide suggestions when clicking outside for mobile
+    document.addEventListener('click', (e) => {
+        if (!mobileSearchInput.contains(e.target) && !mobileSuggestionsList.contains(e.target)) {
+            mobileSuggestionsList.classList.add('hidden');
+        }
+    });
+
+    // Insert suggestion into input when clicked for mobile
+    mobileSuggestionsList.addEventListener('click', (e) => {
+        if (e.target.tagName === 'LI') {
+            mobileSearchInput.value = e.target.textContent;
+            mobileSuggestionsList.classList.add('hidden');
+        }
+    });
+}
+
 </script>

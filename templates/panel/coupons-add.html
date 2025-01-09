@@ -1,5 +1,5 @@
-{% extends "base/admin-base.html" %} 
-{% block container %} 
+{% extends "base/admin-base.html" %}
+{% block container %}
 {% load static %}
 
 {% include 'includes/admin-nav.html' %}
@@ -11,8 +11,8 @@
     <div class="row page-titles mx-0">
         <div class="col p-md-0">
             <ol class="breadcrumb">
-                <li class="breadcrumb-item"><a href="javascript:void(0)">{{sub_title}}</a></li>
-                <li class="breadcrumb-item active"><a href="javascript:void(0)">{{name}}</a></li>
+                <li class="breadcrumb-item"><a href="javascript:void(0)">{{ sub_title }}</a></li>
+                <li class="breadcrumb-item active"><a href="javascript:void(0)">{{ name }}</a></li>
             </ol>
         </div>
     </div>
@@ -21,31 +21,61 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card" style="background-color: #b5c8eb;">
                     <div class="card-body">
-                        <h4 class="card-title">{{name}}</h4>
+                        <h4 class="card-title">{{ name }}</h4>
                         <div class="basic-form">
                             <form action="" method="post" class="ajax redirect">
                                 {% csrf_token %}
                                 <div class="form-row">
+                                    <!-- Coupon Code -->
                                     <div class="form-group col-12 col-md-6">
                                         <label>Coupon Code</label>
                                         {{ form.code }}
                                     </div>
+                                    <!-- Description -->
                                     <div class="form-group col-12 col-md-6">
-                                        <label>Discount Type</label>
-                                        {{ form.discount_type }}
+                                        <label>Description</label>
+                                        {{ form.description }}
                                     </div>
+                                    <!-- Is Percentage -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>
+                                            <input type="checkbox" class="form-check-input" {% if form.is_Percentage.value %}checked{% endif %}>
+                                            Is Percentage
+                                        </label>
+                                    </div>
+                                    <!-- Discount Value -->
                                     <div class="form-group col-12 col-md-6">
                                         <label>Discount Value</label>
                                         {{ form.discount_value }}
                                     </div>
+                                    <!-- Active -->
                                     <div class="form-group col-12 col-md-6">
-                                        <label>Expiration Date</label>
-                                        {{ form.expiration_date }}
+                                        <label>
+                                            <input type="checkbox" class="form-check-input" {% if form.active.value %}checked{% endif %}>
+                                            Active
+                                        </label>
                                     </div>
-                                    <button class="btn login-form__btn submit button" type="submit">Submit</button>
+                                    <!-- Valid From -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Valid From</label>
+                                        {{ form.valid_from }}
+                                    </div>
+                                    <!-- Valid Until -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Valid Until</label>
+                                        {{ form.valid_until }}
+                                    </div>
+                                    <!-- Is Once Per User -->
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>
+                                            <input type="checkbox" class="form-check-input" {% if form.is_onece_peruser.value %}checked{% endif %}>
+                                            Is Once Per User
+                                        </label>
+                                    </div>
                                 </div>
+                                <button class="btn login-form__btn submit button" type="submit">Submit</button>
                                 {% if message %}
                                     <p>{{ message }}</p>
                                 {% endif %}

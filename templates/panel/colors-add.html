@@ -21,7 +21,7 @@
     <div class="container-fluid">
         <div class="row">
             <div class="col-12">
-                <div class="card">
+                <div class="card" style="background-color: #b5c8eb;">
                     <div class="card-body">
                         <h4 class="card-title">{{name}}</h4>
                         <div class="basic-form">
@@ -31,6 +31,10 @@
                                     <div class="form-group col-12 col-md-6">
                                         <label>Color Name</label>
                                         {{ form.name }}
+                                    </div>
+                                    <div class="form-group col-12 col-md-6">
+                                        <label>Color code</label>
+                                        {{ form.color }}
                                     </div>
 
                                     <button class="btn login-form__btn submit button" type="submit">Submit</button>

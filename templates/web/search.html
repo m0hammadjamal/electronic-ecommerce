@@ -2,8 +2,10 @@
 {% block container %}
 {% load static %}
 
+{% include 'includes/header.html' %}
+
 {% if instances %}
-<section class="py-20">
+<section class="py-5 md:mt-[70px] mt-[130px]">
     <section class="wrapper">
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-5 md:gap-10">
             {% for product in instances %}

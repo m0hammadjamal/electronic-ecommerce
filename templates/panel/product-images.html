@@ -33,7 +33,10 @@
                             <table class="table table-bordered zero-configuration" style="border-radius: 14px;">
                                 <thead>
                                     <tr>
+                                        <th>PRODUCT</th>
+                                        <th>VARIANT</th>
                                         <th>IMAGE</th>
+                                        <th>ALT TEXT</th>
                                         <th>EDIT</th>
                                         <th>DELETE</th>
                                     </tr>
@@ -41,9 +44,18 @@
                                 <tbody>
                                     {% for instance in instances %}
                                     <tr>
+                                        <td>{{ instance.product.name }}</td> <!-- Display Product Name -->
                                         <td>
-                                            <img src="{{ instance.image.url }}" width="100" height="100" alt="Product Image">
+                                            {% for variant in instance.variant.all %}
+                                                {{ variant.name }}{% if not forloop.last %},<br> {% endif %}
+                                            {% empty %}
+                                                None
+                                            {% endfor %}
                                         </td>
+                                        <td>
+                                            <img src="{{ instance.image.url }}" width="100" height="100" alt="{{ instance.alt_text }}">
+                                        </td>
+                                        <td>{{ instance.alt_text }}</td> <!-- Display Alt Text -->
                                         <td>
                                             <a href="{% url 'managers:product_images_edit' id=instance.id %}" id="custom-btn">EDIT</a>
                                         </td>

@@ -37,7 +37,6 @@ from customers.models import *
 
 # --------------------------------------------------------------------------------------------------------------------------------
 
-from django.db.models import Sum
 
 def index(request):
     slider = Slider.objects.all()
@@ -127,32 +126,47 @@ def cart(request):
     delivery_charge = Decimal("0.00")  # Use Decimal for monetary values
     discount_amount = Decimal("0.00")
     best_offer = None
+    out_of_stock_items = []
+
+    for item in cart_items:
+        if item.option:  # Check stock for product option
+            if item.option.stock == 0:
+                out_of_stock_items.append(f"{item.product.name} - {item.option.name}")
+        else:  # Check stock for product itself
+            if item.product.stock == 0:
+                out_of_stock_items.append(item.product.name)
+
+    if out_of_stock_items:
+        messages.error(request, f"The following products are out of stock: {', '.join(out_of_stock_items)}")
 
     if request.method == 'POST':
-        code = request.POST.get('code')
-        print(f"[DEBUG] Received coupon code: {code}")
-        
-        try:
-            offer = Coupon.objects.get(code=code)
-            print(f"[DEBUG] Found offer: {offer}")
+        if out_of_stock_items:
+            messages.error(request, "Some items in your cart are out of stock. Please remove them to proceed.")
+        else:
+            code = request.POST.get('code')
+            print(f"[DEBUG] Received coupon code: {code}")
             
-            if not offer.is_valid():
-                messages.error(request, f"Coupon '{code}' is invalid or has expired.")
-            else:
-                if offer.is_Percentage:
-                    discount = (offer.discount_value / Decimal("100")) * total_price
-                else:
-                    discount = offer.discount_value
+            try:
+                offer = Coupon.objects.get(code=code)
+                print(f"[DEBUG] Found offer: {offer}")
                 
-                if discount > discount_amount:
-                    discount_amount = discount
-                    best_offer = offer
-                    messages.success(request, f"Coupon '{code}' applied successfully!")
+                if not offer.is_valid():
+                    messages.error(request, f"Coupon '{code}' is invalid or has expired.")
                 else:
-                    messages.error(request, f"Coupon '{code}' does not provide a better discount.")
-        except Coupon.DoesNotExist:
-            print(f"[ERROR] Coupon with code '{code}' does not exist.")
-            messages.error(request, f"Coupon '{code}' is invalid or has expired.")
+                    if offer.is_Percentage:
+                        discount = (offer.discount_value / Decimal("100")) * total_price
+                    else:
+                        discount = offer.discount_value
+                    
+                    if discount > discount_amount:
+                        discount_amount = discount
+                        best_offer = offer
+                        messages.success(request, f"Coupon '{code}' applied successfully!")
+                    else:
+                        messages.error(request, f"Coupon '{code}' does not provide a better discount.")
+            except Coupon.DoesNotExist:
+                print(f"[ERROR] Coupon with code '{code}' does not exist.")
+                messages.error(request, f"Coupon '{code}' is invalid or has expired.")
 
     total_amount_to_pay = total_price + delivery_charge - discount_amount
 
@@ -189,6 +203,7 @@ def cart(request):
         "discount_amount": discount_amount,
         "delivery_charge": delivery_charge,
         "best_offer": best_offer,
+        "out_of_stock_items": out_of_stock_items,
     }
 
     return render(request, 'web/cart.html', context=context)
@@ -314,6 +329,7 @@ def cart_plus(request, id):
     customer = Customer.objects.get(user=user)
     cart_item = CartItem.objects.get(id=id, customer=customer)
 
+    # Update quantity and price
     cart_item.quantity += 1
     cart_item.price += cart_item.product.sale_price
     cart_item.save()
@@ -736,7 +752,13 @@ def checkout(request):
             last_name=last_name,
             email=email,
             phone_number=phone_number,
-            order_status="IN",
+            order_status="PL",
+            address1 = address.address1,
+            address2 = address.address2,
+            city = address.city,
+            state = address.state,
+            pincode = address.pincode,
+            address_type = address.address_type or None,
         )
 
         # Add cart items to order and link them
@@ -895,6 +917,18 @@ def product(request, id):
     else:
         customer = None
 
+
+    has_ordered = False
+
+    if request.user.is_authenticated:
+        customer = Customer.objects.filter(user=request.user).first()
+        if customer:
+            # Check if the customer has ordered the product
+            has_ordered = Order.objects.filter(
+                customer=customer,
+                items__product=product
+            ).exists()
+
     # Fetch related data
     specs = Spec.objects.filter(product=product).select_related('image')
     is_in_cart = CartItem.objects.filter(customer=customer, product=product).exists() if customer else False
@@ -1006,6 +1040,8 @@ def product(request, id):
             "selected_color_name": selected_color.name if selected_color else None, 
         }
         return JsonResponse(response_data)
+    
+    stock_available = matching_option.stock > 0 if matching_option else product.stock > 0
 
 
 
@@ -1018,6 +1054,8 @@ def product(request, id):
 
     # Context for rendering the template
     context = {
+        "has_ordered": has_ordered,
+        "stock_available": stock_available,
         "reviews": reviews,
         "avg_rating": round(avg_rating, 1),
         "review_count": review_count,
@@ -1409,4 +1447,3 @@ def reset_password(request, uidb64, token):
         return render(request, 'web/reset_password.html')
 
 # --------------------------------------------------------------------------------------------------------------------------------
-
